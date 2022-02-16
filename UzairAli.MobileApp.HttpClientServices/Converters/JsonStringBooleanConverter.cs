@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace UzairAli.MobileApp.HttpClientServices.Converters;
+namespace UzairAli.HttpClientServices.Converters;
 public class JsonStringBooleanConverter : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert)
@@ -20,7 +20,7 @@ public class JsonStringBooleanConverter : JsonConverterFactory
         return new NullableBooleanConverter();
     }
 
-   
+
 
     private class BooleanConverter : JsonConverter<bool>
     {

@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace UzairAli.MobileApp.HttpClientServices;
+namespace UzairAli.HttpClientServices;
 public interface IHttpClientService
 {
     Task<HttpResponseMessage> GetAsync(string uri, CancellationToken ct = default);

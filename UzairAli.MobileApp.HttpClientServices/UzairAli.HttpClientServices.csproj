@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>netstandard2.1</TargetFramework>
+	<LangVersion>10.0</LangVersion>
+	<Nullable>enable</Nullable>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+	<PackageId>UzairAli.HttpClientServices</PackageId>
+	<PackageTags>HttpClient Service</PackageTags>
+	<Version>0.1.3</Version>
+	<Authors>Uzair Ali</Authors>
+	<Company>Uzair Ali</Company>
+	<Description>This library provides utility functions for .Net Http Client</Description>
+
+	<dependencies>
+		<dependency id="System.Net.Http.Json" version="5.0" />
+		<dependency id="System.Text.Json" version="5.0" />
+	</dependencies>
+
+	<RepositoryUrl>https://github.com/uzairali001/UzairAli.MobileApp.HttpClientServices.git</RepositoryUrl>
+
+	<RepositoryType>git</RepositoryType>
+
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+  </PropertyGroup>
+		
+
+  <ItemGroup>
+    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.2" />
+  </ItemGroup>
+
+</Project>

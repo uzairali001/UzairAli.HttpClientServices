@@ -12,11 +12,11 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-using UzairAli.MobileApp.HttpClientServices.Attributes;
-using UzairAli.MobileApp.HttpClientServices.Exceptions;
-using UzairAli.MobileApp.HttpClientServices.Models.Configurations;
+using UzairAli.HttpClientServices.Attributes;
+using UzairAli.HttpClientServices.Exceptions;
+using UzairAli.HttpClientServices.Models.Configurations;
 
-namespace UzairAli.MobileApp.HttpClientServices;
+namespace UzairAli.HttpClientServices;
 public class HttpClientService : IHttpClientService
 {
     #region Properties

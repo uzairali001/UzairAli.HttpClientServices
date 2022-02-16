@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UzairAli.MobileApp.HttpClientServices.Exceptions;
+namespace UzairAli.HttpClientServices.Exceptions;
 internal class JsonDeserializeException : Exception
 {
     public Type ServiceType { get; }

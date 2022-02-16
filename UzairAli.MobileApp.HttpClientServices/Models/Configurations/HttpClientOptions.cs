@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace UzairAli.MobileApp.HttpClientServices.Models.Configurations;
+namespace UzairAli.HttpClientServices.Models.Configurations;
 public class HttpClientOptions
 {
     public Uri? BaseAddress { get; set; }
