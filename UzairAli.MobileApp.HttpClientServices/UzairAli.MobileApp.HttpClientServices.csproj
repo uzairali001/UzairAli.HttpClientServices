@@ -8,17 +8,23 @@
 
 	<PackageId>UzairAli.MobileApp.HttpClientServices</PackageId>
 	<PackageTags>Http Client</PackageTags>
-	<Version>0.1.1</Version>
+	<Version>0.1.2</Version>
 	<Authors>Uzair Ali</Authors>
 	<Company>Uzair Ali</Company>
 	<Description>
 		This library provides utility functions for .Net Http Client
 	</Description>
+
+	<dependencies>
+		<dependency id="System.Net.Http.Json" version="5.0" />
+		<dependency id="System.Text.Json" version="5.0" />
+	</dependencies>
+
   </PropertyGroup>
 		
 
   <ItemGroup>
-    <PackageReference Include="System.Net.Http.Json" Version="6.0.2-mauipre.1.22054.8" />
+    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.2" />
   </ItemGroup>
 
