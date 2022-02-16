@@ -24,27 +24,28 @@ public interface IHttpClientService
 
 
 
-    Task<object?> GetFromJsonAsync(string uri, Type returnType, CancellationToken ct = default);
-    Task<object?> GetFromJsonAsync(string uri, Dictionary<string, string> queryParameters, Type returnType, CancellationToken ct = default);
-    Task<object?> GetFromJsonAsync(string uri, object queryParameters, Type returnType, CancellationToken ct = default);
+    Task<object?> GetAsync(string uri, Type returnType, CancellationToken ct = default);
+    Task<object?> GetAsync(string uri, Dictionary<string, string> queryParameters, Type returnType, CancellationToken ct = default);
+    Task<object?> GetAsync(string uri, object queryParameters, Type returnType, CancellationToken ct = default);
 
-    Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(string uri, CancellationToken ct = default);
-    Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(string uri, Dictionary<string, string> queryParameters, CancellationToken ct = default);
-    Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(string uri, object queryParameters, CancellationToken ct = default);
-    Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(Uri uri, CancellationToken ct = default);
-    Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(Uri uri, Dictionary<string, string> queryParameters, CancellationToken ct = default);
-    Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(Uri uri, object queryParameters, CancellationToken ct = default);
+    Task<TReturnModel?> GetAsync<TReturnModel>(string uri, CancellationToken ct = default);
+    Task<TReturnModel?> GetAsync<TReturnModel>(string uri, Dictionary<string, string> queryParameters, CancellationToken ct = default);
+    Task<TReturnModel?> GetAsync<TReturnModel>(string uri, object queryParameters, CancellationToken ct = default);
+    Task<TReturnModel?> GetAsync<TReturnModel>(Uri uri, CancellationToken ct = default);
+    Task<TReturnModel?> GetAsync<TReturnModel>(Uri uri, Dictionary<string, string> queryParameters, CancellationToken ct = default);
+    Task<TReturnModel?> GetAsync<TReturnModel>(Uri uri, object queryParameters, CancellationToken ct = default);
 
 
 
-    Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(string uri, HttpContent? httpContent, CancellationToken ct = default);
-    Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(string uri, Dictionary<string, string> parameters, CancellationToken ct = default);
-    Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(string uri, object parameters, CancellationToken ct = default);
-    Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(Uri uri, HttpContent? httpContent, CancellationToken ct = default);
-    Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(Uri uri, Dictionary<string, string> queryParameters, CancellationToken ct = default);
-    Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(Uri uri, object queryParameters, CancellationToken ct = default);
+    Task<TReturnModel?> PostAsync<TReturnModel>(string uri, HttpContent? httpContent, CancellationToken ct = default);
+    Task<TReturnModel?> PostAsync<TReturnModel>(string uri, Dictionary<string, string> parameters, CancellationToken ct = default);
+    Task<TReturnModel?> PostAsync<TReturnModel>(string uri, object parameters, CancellationToken ct = default);
+    Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, HttpContent? httpContent, CancellationToken ct = default);
+    Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, Dictionary<string, string> queryParameters, CancellationToken ct = default);
+    Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, object queryParameters, CancellationToken ct = default);
 
     Task<HttpResponseMessage> PutAsync(string uri, object model, CancellationToken ct = default);
+    Task<HttpResponseMessage> PutAsync(Uri uri, object model, CancellationToken ct = default);
 
     Task<HttpResponseMessage> DeleteAsync(Uri uri, CancellationToken ct = default);
     Task<HttpResponseMessage> DeleteAsync(string uri, CancellationToken ct = default);

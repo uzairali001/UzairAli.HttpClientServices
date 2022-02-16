@@ -23,9 +23,9 @@ public class HttpClientService : IHttpClientService
     #endregion
 
     #region Fields
-    internal readonly HttpClient _httpClient;
-    internal readonly JsonSerializerOptions? _jsonSerializerOptions;
-    internal readonly HttpClientOptions _options;
+    private readonly HttpClient _httpClient;
+    private readonly JsonSerializerOptions? _jsonSerializerOptions;
+    private readonly HttpClientOptions _options;
     #endregion
 
     #region Constructors
@@ -34,6 +34,8 @@ public class HttpClientService : IHttpClientService
         _options = new()
         {
             Timeout = TimeSpan.FromSeconds(100),
+            RequestMediaType = "application/json",
+            RequestEncoding = Encoding.UTF8,
             JsonOptions = new JsonSerializerOptions()
             {
                 PropertyNameCaseInsensitive = true,
@@ -41,11 +43,15 @@ public class HttpClientService : IHttpClientService
                 NumberHandling = JsonNumberHandling.AllowReadingFromString,
                 Converters =
                 {
+#if NET6_0_OR_GREATER
+                    new Converters.JsonStringDateOnlyConverter(),
+                    new Converters.JsonStringTimeOnlyConverter(),
+#endif
                     new Converters.JsonStringBooleanConverter(),
                 }
             }
         };
-        _options.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+        _options.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
         opts?.Invoke(_options);
 
@@ -65,22 +71,19 @@ public class HttpClientService : IHttpClientService
 
         _jsonSerializerOptions = _options.JsonOptions;
     }
-    #endregion
+#endregion
 
-    #region Public Methods
-    #region GetAsync
+#region Public Methods
+#region GetAsync
     public async Task<HttpResponseMessage> GetAsync(string uri, CancellationToken ct = default)
     {
         return await GetInternalAsync(uri, ct: ct);
     }
-    public async Task<HttpResponseMessage> GetAsync(string uri,
-        Dictionary<string, string> queryParameters, CancellationToken ct = default)
+    public async Task<HttpResponseMessage> GetAsync(string uri, Dictionary<string, string> queryParameters, CancellationToken ct = default)
     {
         return await GetInternalAsync(uri, queryParameters, ct: ct);
     }
-    public async Task<HttpResponseMessage> GetAsync(string uri,
-        object queryParameters, CancellationToken ct = default)
-
+    public async Task<HttpResponseMessage> GetAsync(string uri, object queryParameters, CancellationToken ct = default)
     {
         return await GetInternalAsync(uri, queryParameters, ct: ct);
     }
@@ -90,161 +93,146 @@ public class HttpClientService : IHttpClientService
         return await GetInternalAsync(uri.ToString(), ct: ct);
     }
 
-    public async Task<HttpResponseMessage> GetAsync(Uri uri,
-        Dictionary<string, string> queryParameters, CancellationToken ct = default)
+    public async Task<HttpResponseMessage> GetAsync(Uri uri,Dictionary<string, string> queryParameters, CancellationToken ct = default)
     {
         return await GetInternalAsync(uri.ToString(), queryParameters, ct: ct);
     }
 
-    public async Task<HttpResponseMessage> GetAsync(Uri uri,
-        object queryParameters, CancellationToken ct = default)
+    public async Task<HttpResponseMessage> GetAsync(Uri uri, object queryParameters, CancellationToken ct = default)
     {
         return await GetInternalAsync(uri.ToString(), queryParameters, ct: ct);
     }
-    #endregion
+#endregion
 
-    #region GetFromJsonAsync
-    public async Task<object?> GetFromJsonAsync(string uri, Type returnType, CancellationToken ct = default)
+#region GetAsync
+    public async Task<object?> GetAsync(string uri, Type returnType, CancellationToken ct = default)
     {
-        return await GetFromJsonInternalAsync(uri, returnType, ct: ct);
+        return await GetInternalAsync(uri, returnType, ct: ct);
     }
-    public async Task<object?> GetFromJsonAsync(string uri,
-       Dictionary<string, string> queryParameters, Type returnType, CancellationToken ct = default)
+    public async Task<object?> GetAsync(string uri, Dictionary<string, string> queryParameters, Type returnType,
+        CancellationToken ct = default)
     {
-        return await GetFromJsonInternalAsync(uri, returnType, queryParameters, ct);
+        return await GetInternalAsync(uri, returnType, queryParameters, ct);
     }
-    public async Task<object?> GetFromJsonAsync(string uri,
-       object queryParameters, Type returnType, CancellationToken ct = default)
+    public async Task<object?> GetAsync(string uri, object queryParameters, Type returnType, CancellationToken ct = default)
     {
-        return await GetFromJsonInternalAsync(uri, returnType, queryParameters, ct);
+        return await GetInternalAsync(uri, returnType, queryParameters, ct);
     }
-
 
 
-    public async Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(string uri, CancellationToken ct = default)
+    public async Task<TReturnModel?> GetAsync<TReturnModel>(string uri, CancellationToken ct = default)
     {
-        return (TReturnModel?)await GetFromJsonInternalAsync(uri,
-            typeof(TReturnModel), ct: ct);
+        return (TReturnModel?)await GetInternalAsync(uri, typeof(TReturnModel), ct: ct);
     }
-    public async Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(string uri,
-        Dictionary<string, string> queryParameters, CancellationToken ct = default)
+    public async Task<TReturnModel?> GetAsync<TReturnModel>(string uri, Dictionary<string, string> queryParameters,
+        CancellationToken ct = default)
     {
-        return (TReturnModel?)await GetFromJsonInternalAsync(uri,
-            typeof(TReturnModel), queryParameters, ct);
+        return (TReturnModel?)await GetInternalAsync(uri, typeof(TReturnModel), queryParameters, ct);
     }
-    public async Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(string uri,
-        object queryParameters, CancellationToken ct = default)
+    public async Task<TReturnModel?> GetAsync<TReturnModel>(string uri, object queryParameters, CancellationToken ct = default)
     {
-        return (TReturnModel?)await GetFromJsonInternalAsync(uri,
-            typeof(TReturnModel), queryParameters, ct);
+        return (TReturnModel?)await GetInternalAsync(uri, typeof(TReturnModel), queryParameters, ct);
     }
 
-    public async Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(Uri uri, CancellationToken ct = default)
+    public async Task<TReturnModel?> GetAsync<TReturnModel>(Uri uri, CancellationToken ct = default)
     {
-        return (TReturnModel?)await GetFromJsonInternalAsync(uri.ToString(), typeof(TReturnModel), ct: ct);
+        return (TReturnModel?)await GetInternalAsync(uri.ToString(), typeof(TReturnModel), ct: ct);
     }
 
-    public async Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(Uri uri,
-        Dictionary<string, string> queryParameters, CancellationToken ct = default)
+    public async Task<TReturnModel?> GetAsync<TReturnModel>(Uri uri, Dictionary<string, string> queryParameters,
+        CancellationToken ct = default)
     {
-        return (TReturnModel?)await GetFromJsonInternalAsync(uri.ToString(),
-            typeof(TReturnModel), queryParameters, ct: ct);
+        return (TReturnModel?)await GetInternalAsync(uri.ToString(), typeof(TReturnModel), queryParameters, ct: ct);
     }
 
-    public async Task<TReturnModel?> GetFromJsonAsync<TReturnModel>(Uri uri,
-        object queryParameters, CancellationToken ct = default)
+    public async Task<TReturnModel?> GetAsync<TReturnModel>(Uri uri, object queryParameters, CancellationToken ct = default)
     {
-        return (TReturnModel?)await GetFromJsonInternalAsync(uri.ToString(),
-            typeof(TReturnModel), queryParameters, ct: ct);
+        return (TReturnModel?)await GetInternalAsync(uri.ToString(), typeof(TReturnModel), queryParameters, ct: ct);
     }
-    #endregion
+#endregion
 
-    #region PostAsync
+#region PostAsync
     public async Task<HttpResponseMessage> PostAsync(string uri, HttpContent? httpContent, CancellationToken ct = default)
     {
         return await PostInternalAsync(uri, httpContent, ct: ct);
     }
-    public async Task<HttpResponseMessage> PostAsync(string uri, Dictionary<string, object> parameters,
-        CancellationToken ct = default)
+    public async Task<HttpResponseMessage> PostAsync(string uri, Dictionary<string, object> parameters, CancellationToken ct = default)
     {
-        var json = JsonSerializer.Serialize(parameters, options: _jsonSerializerOptions);
-        var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
-        return await PostInternalAsync(uri, httpContent, ct: ct);
+        return await PostInternalAsync(uri, parameters, ct: ct);
     }
     public async Task<HttpResponseMessage> PostAsync(string uri, object parameters, CancellationToken ct = default)
     {
-        var json = JsonSerializer.Serialize(parameters, options: _jsonSerializerOptions);
-        var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
-        return await PostInternalAsync(uri, httpContent, ct: ct);
+        return await PostInternalAsync(uri, parameters, ct: ct);
     }
 
     public async Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent? httpContent, CancellationToken ct = default)
     {
-        return await PostAsync(uri.ToString(), httpContent, ct: ct);
+        return await PostInternalAsync(uri.ToString(), httpContent, ct: ct);
     }
 
     public async Task<HttpResponseMessage> PostAsync(Uri uri, Dictionary<string, object> parameters,
         CancellationToken ct = default)
     {
-        return await PostAsync(uri.ToString(), parameters, ct: ct);
+        return await PostInternalAsync(uri.ToString(), parameters, ct: ct);
     }
 
     public async Task<HttpResponseMessage> PostAsync(Uri uri, object parameters, CancellationToken ct = default)
     {
-        return await PostAsync(uri.ToString(), parameters, ct: ct);
+        return await PostInternalAsync(uri.ToString(), parameters, ct: ct);
     }
-    #endregion
+#endregion
 
-    #region PostFromJsonAsync
-    public async Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(string uri, HttpContent? httpContent, CancellationToken ct = default)
+#region PostFromJsonAsync
+    public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, HttpContent? httpContent, CancellationToken ct = default)
     {
-        return (TReturnModel?)await PostFromJsonInternalAsync(uri, typeof(TReturnModel), httpContent, ct: ct);
+        return (TReturnModel?)await PostInternalAsync(uri, typeof(TReturnModel), httpContent, ct: ct);
     }
-    public async Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(string uri,
-        Dictionary<string, string> parameters, CancellationToken ct = default)
-    {
-        var json = JsonSerializer.Serialize(parameters, options: _jsonSerializerOptions);
-        var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
-        return (TReturnModel?)await PostFromJsonInternalAsync(uri, typeof(TReturnModel), httpContent, ct);
-    }
-    public async Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(string uri,
-        object parameters, CancellationToken ct = default)
-    {
-        var json = JsonSerializer.Serialize(parameters, options: _jsonSerializerOptions);
-        var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
-        return (TReturnModel?)await PostFromJsonInternalAsync(uri, typeof(TReturnModel), httpContent, ct);
-    }
-
-    public async Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(Uri uri, HttpContent? httpContent, CancellationToken ct = default)
-    {
-        return await PostFromJsonAsync<TReturnModel>(uri.ToString(), httpContent, ct: ct);
-    }
-
-    public async Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(Uri uri, Dictionary<string, string> queryParameters,
+    public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, Dictionary<string, string> parameters,
         CancellationToken ct = default)
     {
-        return await PostFromJsonAsync<TReturnModel>(uri.ToString(), queryParameters, ct: ct);
+        var json = JsonSerializer.Serialize(parameters, options: _jsonSerializerOptions);
+        var httpContent = new StringContent(json, _options.RequestEncoding, _options.RequestMediaType);
+
+        return (TReturnModel?)await PostInternalAsync(uri, typeof(TReturnModel), httpContent, ct);
+    }
+    public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, object parameters, CancellationToken ct = default)
+    {
+        var json = JsonSerializer.Serialize(parameters, options: _jsonSerializerOptions);
+        var httpContent = new StringContent(json, _options.RequestEncoding, _options.RequestMediaType);
+
+        return (TReturnModel?)await PostInternalAsync(uri, typeof(TReturnModel), httpContent, ct);
     }
 
-    public async Task<TReturnModel?> PostFromJsonAsync<TReturnModel>(Uri uri, object queryParameters,
+    public async Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, HttpContent? httpContent, CancellationToken ct = default)
+    {
+        return await PostAsync<TReturnModel>(uri.ToString(), httpContent, ct: ct);
+    }
+
+    public async Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, Dictionary<string, string> queryParameters,
         CancellationToken ct = default)
     {
-        return await PostFromJsonAsync<TReturnModel>(uri.ToString(), queryParameters, ct: ct);
+        return await PostAsync<TReturnModel>(uri.ToString(), queryParameters, ct: ct);
     }
-    #endregion
 
-    #region HttpPut
+    public async Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, object queryParameters,
+        CancellationToken ct = default)
+    {
+        return await PostAsync<TReturnModel>(uri.ToString(), queryParameters, ct: ct);
+    }
+#endregion
+
+#region HttpPut
     public async Task<HttpResponseMessage> PutAsync(string uri, object model, CancellationToken ct = default)
     {
         return await _httpClient.PutAsJsonAsync(uri, model, _jsonSerializerOptions, ct);
     }
-    #endregion
+    public async Task<HttpResponseMessage> PutAsync(Uri uri, object model, CancellationToken ct = default)
+    {
+        return await _httpClient.PutAsJsonAsync(uri, model, _jsonSerializerOptions, ct);
+    }
+#endregion
 
-    #region HttpDelete
+#region HttpDelete
     public async Task<HttpResponseMessage> DeleteAsync(Uri uri, CancellationToken ct = default)
     {
         return await DeleteAsync(uri.ToString(), ct);
@@ -253,9 +241,9 @@ public class HttpClientService : IHttpClientService
     {
         return await _httpClient.DeleteAsync(uri, ct);
     }
-    #endregion
+#endregion
 
-    #region JsonMapping
+#region JsonMapping
     public async Task<object?> DeserializeResponseAsync(HttpResponseMessage? result, Type returnType)
     {
         try
@@ -286,12 +274,12 @@ public class HttpClientService : IHttpClientService
     {
         return (TModel?)await DeserializeResponseAsync(result, typeof(TModel));
     }
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
-    #region Private Methods
-    internal async Task<HttpResponseMessage> GetInternalAsync(string uri, object? queryParameters = null,
+#region Private Methods
+    private async Task<HttpResponseMessage> GetInternalAsync(string uri, object? queryParameters = null,
         CancellationToken ct = default)
     {
         string parameterString = await GetParameterStringAsync(queryParameters);
@@ -301,27 +289,21 @@ public class HttpClientService : IHttpClientService
         return await _httpClient.GetAsync(uriWithParameters, cancellationToken: ct);
     }
 
-    internal async Task<object?> GetFromJsonInternalAsync(string uri, Type returnModel,
-        object? queryParameters = null, CancellationToken ct = default)
+    private async Task<object?> GetInternalAsync(string uri, Type returnModel, object? queryParameters = null,
+        CancellationToken ct = default)
     {
-        string responseText = string.Empty;
+        string parameterString = await GetParameterStringAsync(queryParameters);
+        string parameterAppend = string.IsNullOrEmpty(parameterString) is false ? "?" + parameterString : string.Empty;
+        string uriWithParameters = $"{uri}{parameterAppend}";
 
-        var response = await GetInternalAsync(uri, queryParameters, ct);
-        if (response is null || response.StatusCode == System.Net.HttpStatusCode.NoContent)
-        {
-            return default;
-        }
-#if DEBUG
-        responseText = await response.Content.ReadAsStringAsync();
-#endif
-        return await response.Content.ReadFromJsonAsync(returnModel, _jsonSerializerOptions, cancellationToken: ct);
+        return await _httpClient.GetFromJsonAsync(uriWithParameters, returnModel, _jsonSerializerOptions, ct);
     }
 
-    internal async Task<HttpResponseMessage> PostInternalAsync(string uri, HttpContent? httpContent, CancellationToken ct = default)
+    private async Task<HttpResponseMessage> PostInternalAsync<TRequest>(string uri, TRequest? requestModel, CancellationToken ct = default)
     {
-        return await _httpClient.PostAsync(uri, httpContent, ct);
+        return await _httpClient.PostAsJsonAsync(uri, requestModel, _jsonSerializerOptions, ct);
     }
-    internal async Task<object?> PostFromJsonInternalAsync(string uri, Type returnModel, HttpContent? httpContent,
+    private async Task<object?> PostInternalAsync(string uri, Type returnModel, HttpContent? httpContent,
         CancellationToken ct = default)
     {
         var response = await PostInternalAsync(uri, httpContent, ct);
@@ -334,7 +316,7 @@ public class HttpClientService : IHttpClientService
     }
 
 
-    internal async Task<string> GetParameterStringAsync(object? queryParameters)
+    private async Task<string> GetParameterStringAsync(object? queryParameters)
         => await (queryParameters switch
         {
             string para => Task.FromResult(para),
@@ -343,12 +325,12 @@ public class HttpClientService : IHttpClientService
             _ => Task.FromResult(string.Empty),
         });
 
-    internal async Task<string> GetFormUrlEncodedContentAsync(Dictionary<string, string> queryParameters)
+    private async Task<string> GetFormUrlEncodedContentAsync(Dictionary<string, string> queryParameters)
     {
         using HttpContent content = new FormUrlEncodedContent(queryParameters!);
         return await content.ReadAsStringAsync();
     }
-    internal async Task<string> GetParameterStringFromModelAsync(object model)
+    private async Task<string> GetParameterStringFromModelAsync(object model)
     {
         Dictionary<string, string> paramDictionary = model.GetType().GetProperties()
             .Where(p => p.GetSetMethod() != null)
@@ -363,7 +345,7 @@ public class HttpClientService : IHttpClientService
 
         return await GetParameterStringAsync(paramDictionary);
     }
-    internal string GetParameterValueString(object valueObject)
+    private string GetParameterValueString(object valueObject)
     {
         if (valueObject is null)
         {
@@ -384,5 +366,5 @@ public class HttpClientService : IHttpClientService
         };
         return value;
     }
-    #endregion
+#endregion
 }
