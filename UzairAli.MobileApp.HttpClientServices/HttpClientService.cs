@@ -23,17 +23,27 @@ public class HttpClientService : IHttpClientService
     #endregion
 
     #region Fields
-    private readonly HttpClient _httpClient;
-    private readonly JsonSerializerOptions? _jsonSerializerOptions;
-    private readonly HttpClientOptions _options;
+    internal readonly HttpClient _httpClient;
+    internal readonly JsonSerializerOptions? _jsonSerializerOptions;
+    internal readonly HttpClientOptions _options;
     #endregion
 
     #region Constructors
-    public HttpClientService(Action<HttpClientOptions>? opts)
+    public HttpClientService(Action<HttpClientOptions>? opts = null)
     {
         _options = new()
         {
             Timeout = TimeSpan.FromSeconds(100),
+            JsonOptions = new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString,
+                Converters =
+                {
+                    new Converters.JsonStringBooleanConverter(),
+                }
+            }
         };
         _options.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
 
@@ -281,7 +291,7 @@ public class HttpClientService : IHttpClientService
     #endregion
 
     #region Private Methods
-    private async Task<HttpResponseMessage> GetInternalAsync(string uri, object? queryParameters = null,
+    internal async Task<HttpResponseMessage> GetInternalAsync(string uri, object? queryParameters = null,
         CancellationToken ct = default)
     {
         string parameterString = await GetParameterStringAsync(queryParameters);
@@ -291,7 +301,7 @@ public class HttpClientService : IHttpClientService
         return await _httpClient.GetAsync(uriWithParameters, cancellationToken: ct);
     }
 
-    private async Task<object?> GetFromJsonInternalAsync(string uri, Type returnModel,
+    internal async Task<object?> GetFromJsonInternalAsync(string uri, Type returnModel,
         object? queryParameters = null, CancellationToken ct = default)
     {
         string responseText = string.Empty;
@@ -307,11 +317,11 @@ public class HttpClientService : IHttpClientService
         return await response.Content.ReadFromJsonAsync(returnModel, _jsonSerializerOptions, cancellationToken: ct);
     }
 
-    private async Task<HttpResponseMessage> PostInternalAsync(string uri, HttpContent? httpContent, CancellationToken ct = default)
+    internal async Task<HttpResponseMessage> PostInternalAsync(string uri, HttpContent? httpContent, CancellationToken ct = default)
     {
         return await _httpClient.PostAsync(uri, httpContent, ct);
     }
-    private async Task<object?> PostFromJsonInternalAsync(string uri, Type returnModel, HttpContent? httpContent,
+    internal async Task<object?> PostFromJsonInternalAsync(string uri, Type returnModel, HttpContent? httpContent,
         CancellationToken ct = default)
     {
         var response = await PostInternalAsync(uri, httpContent, ct);
@@ -324,7 +334,7 @@ public class HttpClientService : IHttpClientService
     }
 
 
-    private async Task<string> GetParameterStringAsync(object? queryParameters)
+    internal async Task<string> GetParameterStringAsync(object? queryParameters)
         => await (queryParameters switch
         {
             string para => Task.FromResult(para),
@@ -333,12 +343,12 @@ public class HttpClientService : IHttpClientService
             _ => Task.FromResult(string.Empty),
         });
 
-    private async Task<string> GetFormUrlEncodedContentAsync(Dictionary<string, string> queryParameters)
+    internal async Task<string> GetFormUrlEncodedContentAsync(Dictionary<string, string> queryParameters)
     {
         using HttpContent content = new FormUrlEncodedContent(queryParameters!);
         return await content.ReadAsStringAsync();
     }
-    private async Task<string> GetParameterStringFromModelAsync(object model)
+    internal async Task<string> GetParameterStringFromModelAsync(object model)
     {
         Dictionary<string, string> paramDictionary = model.GetType().GetProperties()
             .Where(p => p.GetSetMethod() != null)
@@ -353,7 +363,7 @@ public class HttpClientService : IHttpClientService
 
         return await GetParameterStringAsync(paramDictionary);
     }
-    private string GetParameterValueString(object valueObject)
+    internal string GetParameterValueString(object valueObject)
     {
         if (valueObject is null)
         {
