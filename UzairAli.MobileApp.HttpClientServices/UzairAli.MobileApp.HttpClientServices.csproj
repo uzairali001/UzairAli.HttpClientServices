@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>netstandard2.1</TargetFramework>
+	<LangVersion>preview</LangVersion>
+	<Nullable>enable</Nullable>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+	<PackageId>UzairAli.MobileApp.HttpClientServices</PackageId>
+	<PackageTags>Http Client</PackageTags>
+	<Version>0.1.1</Version>
+	<Authors>Uzair Ali</Authors>
+	<Company>Uzair Ali</Company>
+	<Description>
+		This library provides utility functions for .Net Http Client
+	</Description>
+  </PropertyGroup>
+		
+
+  <ItemGroup>
+    <PackageReference Include="System.Net.Http.Json" Version="6.0.2-mauipre.1.22054.8" />
+    <PackageReference Include="System.Text.Json" Version="6.0.2" />
+  </ItemGroup>
+
+</Project>
