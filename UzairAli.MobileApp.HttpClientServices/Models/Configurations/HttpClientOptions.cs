@@ -9,7 +9,7 @@ public class HttpClientOptions
 {
     public Uri? BaseAddress { get; set; }
     public TimeSpan Timeout { get; set; }
-    public HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> Accept { get; set; } = null!;
+    public IEnumerable<MediaTypeWithQualityHeaderValue> Accept { get; set; } = null!;
 
     public AuthenticationHeaderValue? Authorization { get; set; }
 

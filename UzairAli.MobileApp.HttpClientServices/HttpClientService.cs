@@ -36,6 +36,9 @@ public class HttpClientService : IHttpClientService
             Timeout = TimeSpan.FromSeconds(100),
             RequestMediaType = "application/json",
             RequestEncoding = Encoding.UTF8,
+            Accept = new List<MediaTypeWithQualityHeaderValue> { 
+                new MediaTypeWithQualityHeaderValue("application/json") 
+            },
             JsonOptions = new JsonSerializerOptions()
             {
                 PropertyNameCaseInsensitive = true,
@@ -51,7 +54,6 @@ public class HttpClientService : IHttpClientService
                 }
             }
         };
-        _options.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
         opts?.Invoke(_options);
 
