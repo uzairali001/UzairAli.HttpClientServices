@@ -1,21 +1,70 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
+using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace UzairAli.HttpClientServices.Converters;
+namespace UzairAli.HttpClient.Converters;
 
-public sealed class JsonStringDateOnlyConverter : JsonConverter<DateOnly>
+public sealed class JsonStringDateOnlyConverter : JsonConverterFactory
 {
-    public override DateOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override bool CanConvert(Type typeToConvert)
     {
-        return DateOnly.Parse(reader.GetString()!);
+        return typeToConvert == typeof(DateOnly) ||
+            typeToConvert == typeof(DateOnly?);
     }
 
-    public override void Write(Utf8JsonWriter writer, DateOnly value, JsonSerializerOptions options)
+    public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-        var isoDate = value.ToString("O");
-        writer.WriteStringValue(isoDate);
+        return typeToConvert == typeof(DateOnly)
+            ? new DateOnlyConverter()
+            : new NullableDateOnlyConverter();
     }
+
+    private class DateOnlyConverter : JsonConverter<DateOnly>
+    {
+        public override DateOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return ParseStringToDateOnly(ref reader) ?? default;
+        }
+
+        public override void Write(Utf8JsonWriter writer, DateOnly value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(ConvertStringToDateOnly(value) ?? default);
+        }
+    }
+
+    private class NullableDateOnlyConverter : JsonConverter<DateOnly?>
+    {
+        public override DateOnly? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return ParseStringToDateOnly(ref reader);
+        }
+
+        public override void Write(Utf8JsonWriter writer, DateOnly? value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(ConvertStringToDateOnly(value));
+        }
+    }
+
+    private static DateOnly? ParseStringToDateOnly(ref Utf8JsonReader reader)
+    {
+        return reader.TokenType switch
+        {
+            JsonTokenType.Null => default,
+            _ => DateOnly.Parse(reader.GetString()),
+        };
+    }
+
+    private static string? ConvertStringToDateOnly(DateOnly? value)
+    {
+        if (value is null)
+        {
+            return default;
+        }
+
+        return value.Value.ToString("O");
+    }
+
 }
 #endif

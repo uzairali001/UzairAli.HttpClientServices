@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace UzairAli.HttpClientServices;
+namespace UzairAli.HttpClient;
+
 public interface IHttpClientService
 {
     Task<HttpResponseMessage> GetAsync(string uri, CancellationToken ct = default);
@@ -53,4 +55,6 @@ public interface IHttpClientService
 
     Task<object?> DeserializeResponseAsync(HttpResponseMessage? result, Type returnType);
     Task<TModel?> DeserializeResponseAsync<TModel>(HttpResponseMessage? result);
+    Task<object?> DeserializeJsonAsync(string json, Type returnType, JsonSerializerOptions? options = null);
+    Task<TReturn?> DeserializeJsonAsync<TReturn>(string json, JsonSerializerOptions? options = null);
 }

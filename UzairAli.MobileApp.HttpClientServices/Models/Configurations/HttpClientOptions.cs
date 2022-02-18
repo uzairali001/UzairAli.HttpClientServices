@@ -4,7 +4,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace UzairAli.HttpClientServices.Models.Configurations;
+namespace UzairAli.HttpClient.Models.Configurations;
+
 public class HttpClientOptions
 {
     public Uri? BaseAddress { get; set; }
@@ -18,3 +19,4 @@ public class HttpClientOptions
     public Encoding? RequestEncoding { get; set; }
     public string? RequestMediaType { get; set; }
 }
+

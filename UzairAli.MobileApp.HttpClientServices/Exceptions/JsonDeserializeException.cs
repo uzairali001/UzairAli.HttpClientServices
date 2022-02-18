@@ -1,7 +1,8 @@
 ﻿using System;
 
-namespace UzairAli.HttpClientServices.Exceptions;
-internal class JsonDeserializeException : Exception
+namespace UzairAli.HttpClient.Exceptions;
+
+public class JsonDeserializeException : Exception
 {
     public Type ServiceType { get; }
     public JsonDeserializeException(Type serviceType)
@@ -9,7 +10,7 @@ internal class JsonDeserializeException : Exception
         ServiceType = serviceType;
     }
 
-    public JsonDeserializeException(string message, Type serviceType) : base(message)
+    public JsonDeserializeException(string message, Type serviceType, Exception innerException) : base(message, innerException)
     {
         ServiceType = serviceType;
     }

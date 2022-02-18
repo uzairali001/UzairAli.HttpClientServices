@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Net.Mime;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -12,18 +11,21 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-using UzairAli.HttpClientServices.Attributes;
-using UzairAli.HttpClientServices.Exceptions;
-using UzairAli.HttpClientServices.Models.Configurations;
+using UzairAli.HttpClient.Attributes;
+using UzairAli.HttpClient.Exceptions;
+using UzairAli.HttpClient.Models.Configurations;
 
-namespace UzairAli.HttpClientServices;
+using NetHttpClient = System.Net.Http.HttpClient;
+
+namespace UzairAli.HttpClient;
+
 public class HttpClientService : IHttpClientService
 {
     #region Properties
     #endregion
 
     #region Fields
-    private readonly HttpClient _httpClient;
+    private readonly NetHttpClient _httpClient;
     private readonly JsonSerializerOptions? _jsonSerializerOptions;
     private readonly HttpClientOptions _options;
     #endregion
@@ -36,28 +38,28 @@ public class HttpClientService : IHttpClientService
             Timeout = TimeSpan.FromSeconds(100),
             RequestMediaType = "application/json",
             RequestEncoding = Encoding.UTF8,
-            Accept = new List<MediaTypeWithQualityHeaderValue> { 
-                new MediaTypeWithQualityHeaderValue("application/json") 
-            },
+            Accept = new List<MediaTypeWithQualityHeaderValue> {
+            new MediaTypeWithQualityHeaderValue("application/json")
+        },
             JsonOptions = new JsonSerializerOptions()
             {
                 PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 NumberHandling = JsonNumberHandling.AllowReadingFromString,
                 Converters =
-                {
+            {
 #if NET6_0_OR_GREATER
-                    new Converters.JsonStringDateOnlyConverter(),
-                    new Converters.JsonStringTimeOnlyConverter(),
+                new Converters.JsonStringDateOnlyConverter(),
+                new Converters.JsonStringTimeOnlyConverter(),
 #endif
-                    new Converters.JsonStringBooleanConverter(),
-                }
+                new Converters.JsonStringBooleanConverter(),
+            }
             }
         };
 
         opts?.Invoke(_options);
 
-        _httpClient = new HttpClient()
+        _httpClient = new NetHttpClient()
         {
             BaseAddress = _options.BaseAddress,
             Timeout = _options.Timeout,
@@ -73,10 +75,10 @@ public class HttpClientService : IHttpClientService
 
         _jsonSerializerOptions = _options.JsonOptions;
     }
-#endregion
+    #endregion
 
-#region Public Methods
-#region GetAsync
+    #region Public Methods
+    #region GetAsync
     public async Task<HttpResponseMessage> GetAsync(string uri, CancellationToken ct = default)
     {
         return await GetInternalAsync(uri, ct: ct);
@@ -95,7 +97,7 @@ public class HttpClientService : IHttpClientService
         return await GetInternalAsync(uri.ToString(), ct: ct);
     }
 
-    public async Task<HttpResponseMessage> GetAsync(Uri uri,Dictionary<string, string> queryParameters, CancellationToken ct = default)
+    public async Task<HttpResponseMessage> GetAsync(Uri uri, Dictionary<string, string> queryParameters, CancellationToken ct = default)
     {
         return await GetInternalAsync(uri.ToString(), queryParameters, ct: ct);
     }
@@ -104,9 +106,9 @@ public class HttpClientService : IHttpClientService
     {
         return await GetInternalAsync(uri.ToString(), queryParameters, ct: ct);
     }
-#endregion
+    #endregion
 
-#region GetAsync
+    #region GetFromJsonAsync
     public async Task<object?> GetAsync(string uri, Type returnType, CancellationToken ct = default)
     {
         return await GetInternalAsync(uri, returnType, ct: ct);
@@ -151,9 +153,9 @@ public class HttpClientService : IHttpClientService
     {
         return (TReturnModel?)await GetInternalAsync(uri.ToString(), typeof(TReturnModel), queryParameters, ct: ct);
     }
-#endregion
+    #endregion
 
-#region PostAsync
+    #region PostAsync
     public async Task<HttpResponseMessage> PostAsync(string uri, HttpContent? httpContent, CancellationToken ct = default)
     {
         return await PostInternalAsync(uri, httpContent, ct: ct);
@@ -182,9 +184,9 @@ public class HttpClientService : IHttpClientService
     {
         return await PostInternalAsync(uri.ToString(), parameters, ct: ct);
     }
-#endregion
+    #endregion
 
-#region PostFromJsonAsync
+    #region PostFromJsonAsync
     public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, HttpContent? httpContent, CancellationToken ct = default)
     {
         return (TReturnModel?)await PostInternalAsync(uri, typeof(TReturnModel), httpContent, ct: ct);
@@ -192,14 +194,14 @@ public class HttpClientService : IHttpClientService
     public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, Dictionary<string, string> parameters,
         CancellationToken ct = default)
     {
-        var json = JsonSerializer.Serialize(parameters, options: _jsonSerializerOptions);
+        var json = await SerializeJsonAsync(parameters, options: _jsonSerializerOptions);
         var httpContent = new StringContent(json, _options.RequestEncoding, _options.RequestMediaType);
 
         return (TReturnModel?)await PostInternalAsync(uri, typeof(TReturnModel), httpContent, ct);
     }
     public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, object parameters, CancellationToken ct = default)
     {
-        var json = JsonSerializer.Serialize(parameters, options: _jsonSerializerOptions);
+        var json = await SerializeJsonAsync(parameters, options: _jsonSerializerOptions);
         var httpContent = new StringContent(json, _options.RequestEncoding, _options.RequestMediaType);
 
         return (TReturnModel?)await PostInternalAsync(uri, typeof(TReturnModel), httpContent, ct);
@@ -221,9 +223,9 @@ public class HttpClientService : IHttpClientService
     {
         return await PostAsync<TReturnModel>(uri.ToString(), queryParameters, ct: ct);
     }
-#endregion
+    #endregion
 
-#region HttpPut
+    #region HttpPut
     public async Task<HttpResponseMessage> PutAsync(string uri, object model, CancellationToken ct = default)
     {
         return await _httpClient.PutAsJsonAsync(uri, model, _jsonSerializerOptions, ct);
@@ -232,9 +234,9 @@ public class HttpClientService : IHttpClientService
     {
         return await _httpClient.PutAsJsonAsync(uri, model, _jsonSerializerOptions, ct);
     }
-#endregion
+    #endregion
 
-#region HttpDelete
+    #region HttpDelete
     public async Task<HttpResponseMessage> DeleteAsync(Uri uri, CancellationToken ct = default)
     {
         return await DeleteAsync(uri.ToString(), ct);
@@ -243,9 +245,9 @@ public class HttpClientService : IHttpClientService
     {
         return await _httpClient.DeleteAsync(uri, ct);
     }
-#endregion
+    #endregion
 
-#region JsonMapping
+    #region JsonMapping
     public async Task<object?> DeserializeResponseAsync(HttpResponseMessage? result, Type returnType)
     {
         try
@@ -255,32 +257,50 @@ public class HttpClientService : IHttpClientService
                 return default;
             }
 
-            string? data = await result
+            string? stringContent = await result
                 .Content
                 .ReadAsStringAsync()
                 .ConfigureAwait(false);
 
-            if (string.IsNullOrEmpty(data))
+            if (string.IsNullOrEmpty(stringContent))
             {
                 return default;
             }
 
-            return await Task.Run(() => JsonSerializer.Deserialize(data, returnType, options: _jsonSerializerOptions));
+            return await DeserializeJsonAsync(stringContent, returnType, options: _jsonSerializerOptions);
         }
         catch (Exception ex)
         {
-            throw new JsonDeserializeException($"Unable to deserialize object:{returnType.Name}; {ex.Message}", returnType);
+            throw new JsonDeserializeException($"Unable to deserialize object:{returnType.Name}", returnType, ex);
         }
     }
     public async Task<TModel?> DeserializeResponseAsync<TModel>(HttpResponseMessage? result)
     {
         return (TModel?)await DeserializeResponseAsync(result, typeof(TModel));
     }
-#endregion
 
-#endregion
+    public async Task<object?> DeserializeJsonAsync(string json, Type returnType, JsonSerializerOptions? options = null)
+    {
+        return await Task.Run(() => JsonSerializer.Deserialize(json, returnType, options: options ?? _jsonSerializerOptions));
+    }
+    public async Task<TReturn?> DeserializeJsonAsync<TReturn>(string json, JsonSerializerOptions? options = null)
+    {
+        return await Task.Run(() => JsonSerializer.Deserialize<TReturn>(json, options: options ?? _jsonSerializerOptions));
+    }
 
-#region Private Methods
+    public async Task<string?> SerializeJsonAsync(object? valueObject, Type returnType, JsonSerializerOptions? options = null)
+    {
+        return await Task.Run(() => JsonSerializer.Serialize(valueObject, returnType, options: options ?? _jsonSerializerOptions));
+    }
+    public async Task<string?> SerializeJsonAsync<TModel>(TModel? valueObject, JsonSerializerOptions? options = null)
+    {
+        return await Task.Run(() => JsonSerializer.Serialize(valueObject, options: options ?? _jsonSerializerOptions));
+    }
+    #endregion
+
+    #endregion
+
+    #region Private Methods
     private async Task<HttpResponseMessage> GetInternalAsync(string uri, object? queryParameters = null,
         CancellationToken ct = default)
     {
@@ -368,5 +388,5 @@ public class HttpClientService : IHttpClientService
         };
         return value;
     }
-#endregion
+    #endregion
 }

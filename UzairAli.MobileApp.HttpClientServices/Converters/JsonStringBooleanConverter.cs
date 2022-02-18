@@ -2,7 +2,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace UzairAli.HttpClientServices.Converters;
+namespace UzairAli.HttpClient.Converters;
+
 public class JsonStringBooleanConverter : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert)
@@ -63,7 +64,7 @@ public class JsonStringBooleanConverter : JsonConverterFactory
             writer.WriteBooleanValue(value is true);
         }
 
-        
+
     }
 
     private static bool ParseBoolean(string? value)
@@ -71,7 +72,7 @@ public class JsonStringBooleanConverter : JsonConverterFactory
         return value?.ToLower().Trim() switch
         {
             null => default,
-            "true" or "yes" or "y" or "1" => true,
+            "true" or "yes" or "y" or "1" or "t" => true,
             _ => false,
         };
     }

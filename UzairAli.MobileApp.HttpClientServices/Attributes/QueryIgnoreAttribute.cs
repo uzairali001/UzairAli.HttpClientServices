@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UzairAli.HttpClientServices.Attributes;
+namespace UzairAli.HttpClient.Attributes;
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public class QueryIgnoreAttribute : Attribute
