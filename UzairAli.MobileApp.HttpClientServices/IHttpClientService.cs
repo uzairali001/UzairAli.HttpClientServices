@@ -17,15 +17,6 @@ public interface IHttpClientService
     Task<HttpResponseMessage> GetAsync(Uri uri, object queryParameters, CancellationToken ct = default);
 
 
-    Task<HttpResponseMessage> PostAsync(string uri, HttpContent? httpContent, CancellationToken ct = default);
-    Task<HttpResponseMessage> PostAsync(string uri, Dictionary<string, object> parameters, CancellationToken ct = default);
-    Task<HttpResponseMessage> PostAsync(string uri, object parameters, CancellationToken ct = default);
-    Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent? httpContent, CancellationToken ct = default);
-    Task<HttpResponseMessage> PostAsync(Uri uri, Dictionary<string, object> parameters, CancellationToken ct = default);
-    Task<HttpResponseMessage> PostAsync(Uri uri, object parameters, CancellationToken ct = default);
-
-
-
     Task<object?> GetAsync(string uri, Type returnType, CancellationToken ct = default);
     Task<object?> GetAsync(string uri, Dictionary<string, string> queryParameters, Type returnType, CancellationToken ct = default);
     Task<object?> GetAsync(string uri, object queryParameters, Type returnType, CancellationToken ct = default);
@@ -39,10 +30,25 @@ public interface IHttpClientService
 
 
 
-    Task<TReturnModel?> PostAsync<TReturnModel>(string uri, HttpContent? httpContent, CancellationToken ct = default);
+    Task<HttpResponseMessage> PostAsync(string uri, HttpContent httpContent, CancellationToken ct = default);
+    Task<HttpResponseMessage> PostAsync(string uri, Dictionary<string, object> parameters, CancellationToken ct = default);
+    Task<HttpResponseMessage> PostAsync(string uri, object parameters, CancellationToken ct = default);
+    Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent httpContent, CancellationToken ct = default);
+    Task<HttpResponseMessage> PostAsync(Uri uri, Dictionary<string, object> parameters, CancellationToken ct = default);
+    Task<HttpResponseMessage> PostAsync(Uri uri, object parameters, CancellationToken ct = default);
+
+
+    Task<object?> PostAsync(string uri, HttpContent httpContent, Type returnType, CancellationToken ct = default);
+    Task<object?> PostAsync(string uri, Dictionary<string, string> parameters, Type returnType, CancellationToken ct = default);
+    Task<object?> PostAsync(string uri, object parameters, Type returnType, CancellationToken ct = default);
+    Task<object?> PostAsync(Uri uri, HttpContent httpContent, Type returnType, CancellationToken ct = default);
+    Task<object?> PostAsync(Uri uri, Dictionary<string, string> parameters, Type returnType, CancellationToken ct = default);
+    Task<object?> PostAsync(Uri uri, object parameters, Type returnType, CancellationToken ct = default);
+
+    Task<TReturnModel?> PostAsync<TReturnModel>(string uri, HttpContent httpContent, CancellationToken ct = default);
     Task<TReturnModel?> PostAsync<TReturnModel>(string uri, Dictionary<string, string> parameters, CancellationToken ct = default);
     Task<TReturnModel?> PostAsync<TReturnModel>(string uri, object parameters, CancellationToken ct = default);
-    Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, HttpContent? httpContent, CancellationToken ct = default);
+    Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, HttpContent httpContent, CancellationToken ct = default);
     Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, Dictionary<string, string> queryParameters, CancellationToken ct = default);
     Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, object queryParameters, CancellationToken ct = default);
 

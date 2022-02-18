@@ -188,24 +188,53 @@ public class HttpClientService : IHttpClientService
     #endregion
 
     #region PostFromJsonAsync
+    public async Task<object?> PostAsync(string uri, HttpContent httpContent, Type returnType, CancellationToken ct = default)
+    {
+        return await PostInternalAsync(uri, returnType, httpContent, ct: ct);
+    }
+
+    public async Task<object?> PostAsync(string uri, Dictionary<string, string> parameters, Type returnType, CancellationToken ct = default)
+    {
+        var json = await SerializeJsonAsync(parameters, options: _jsonSerializerOptions);
+        var httpContent = new StringContent(json, _options.RequestEncoding, _options.RequestMediaType);
+        
+        return await PostInternalAsync(uri, returnType, httpContent, ct);
+    }
+
+    public async Task<object?> PostAsync(string uri, object parameters, Type returnType, CancellationToken ct = default)
+    {
+        var json = await SerializeJsonAsync(parameters, options: _jsonSerializerOptions);
+        var httpContent = new StringContent(json, _options.RequestEncoding, _options.RequestMediaType);
+
+        return await PostInternalAsync(uri, returnType, httpContent, ct);
+    }
+
+    public async Task<object?> PostAsync(Uri uri, HttpContent httpContent, Type returnType, CancellationToken ct = default)
+    {
+        return await PostAsync(uri.ToString(), httpContent, returnType, ct);
+    }
+
+    public async Task<object?> PostAsync(Uri uri, Dictionary<string, string> parameters, Type returnType, CancellationToken ct = default)
+    {
+        return await PostAsync(uri.ToString(), parameters, returnType, ct);
+    }
+
+    public async Task<object?> PostAsync(Uri uri, object parameters, Type returnType, CancellationToken ct = default)
+    {
+        return await PostAsync(uri.ToString(), parameters, returnType, ct);
+    }
+
     public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, HttpContent? httpContent, CancellationToken ct = default)
     {
         return (TReturnModel?)await PostInternalAsync(uri, typeof(TReturnModel), httpContent, ct: ct);
     }
-    public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, Dictionary<string, string> parameters,
-        CancellationToken ct = default)
+    public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, Dictionary<string, string> parameters, CancellationToken ct = default)
     {
-        var json = await SerializeJsonAsync(parameters, options: _jsonSerializerOptions);
-        var httpContent = new StringContent(json, _options.RequestEncoding, _options.RequestMediaType);
-
-        return (TReturnModel?)await PostInternalAsync(uri, typeof(TReturnModel), httpContent, ct);
+        return (TReturnModel?)await PostAsync(uri, parameters, typeof(TReturnModel), ct);
     }
     public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, object parameters, CancellationToken ct = default)
     {
-        var json = await SerializeJsonAsync(parameters, options: _jsonSerializerOptions);
-        var httpContent = new StringContent(json, _options.RequestEncoding, _options.RequestMediaType);
-
-        return (TReturnModel?)await PostInternalAsync(uri, typeof(TReturnModel), httpContent, ct);
+        return (TReturnModel?)await PostAsync(uri, parameters, typeof(TReturnModel), ct);
     }
 
     public async Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, HttpContent? httpContent, CancellationToken ct = default)
@@ -389,5 +418,7 @@ public class HttpClientService : IHttpClientService
         };
         return value;
     }
+
+
     #endregion
 }
