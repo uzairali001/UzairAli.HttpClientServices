@@ -157,7 +157,7 @@ public class HttpClientService : IHttpClientService
     #endregion
 
     #region PostAsync
-    public async Task<HttpResponseMessage> PostAsync(string uri, HttpContent? httpContent, CancellationToken ct = default)
+    public async Task<HttpResponseMessage> PostAsync(string uri, HttpContent httpContent, CancellationToken ct = default)
     {
         return await PostInternalAsync(uri, httpContent, ct: ct);
     }
@@ -170,7 +170,7 @@ public class HttpClientService : IHttpClientService
         return await PostInternalAsync(uri, parameters, ct: ct);
     }
 
-    public async Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent? httpContent, CancellationToken ct = default)
+    public async Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent httpContent, CancellationToken ct = default)
     {
         return await PostInternalAsync(uri.ToString(), httpContent, ct: ct);
     }
@@ -224,7 +224,7 @@ public class HttpClientService : IHttpClientService
         return await PostAsync(uri.ToString(), parameters, returnType, ct);
     }
 
-    public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, HttpContent? httpContent, CancellationToken ct = default)
+    public async Task<TReturnModel?> PostAsync<TReturnModel>(string uri, HttpContent httpContent, CancellationToken ct = default)
     {
         return (TReturnModel?)await PostInternalAsync(uri, typeof(TReturnModel), httpContent, ct: ct);
     }
@@ -237,7 +237,7 @@ public class HttpClientService : IHttpClientService
         return (TReturnModel?)await PostAsync(uri, parameters, typeof(TReturnModel), ct);
     }
 
-    public async Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, HttpContent? httpContent, CancellationToken ct = default)
+    public async Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, HttpContent httpContent, CancellationToken ct = default)
     {
         return await PostAsync<TReturnModel>(uri.ToString(), httpContent, ct: ct);
     }
@@ -355,10 +355,9 @@ public class HttpClientService : IHttpClientService
     {
         return await _httpClient.PostAsJsonAsync(uri, requestModel, _jsonSerializerOptions, ct);
     }
-    private async Task<object?> PostInternalAsync(string uri, Type returnModel, HttpContent? httpContent,
-        CancellationToken ct = default)
+    private async Task<object?> PostInternalAsync(string uri, Type returnModel, HttpContent httpContent, CancellationToken ct = default)
     {
-        var response = await PostInternalAsync(uri, httpContent, ct);
+        var response = await _httpClient.PostAsync(uri, httpContent, ct);
         if (response is null)
         {
             return default;
