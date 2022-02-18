@@ -14,9 +14,9 @@ public class HttpClientOptions
 
     public AuthenticationHeaderValue? Authorization { get; set; }
 
-    public JsonSerializerOptions? JsonOptions { get; set; }
+    public JsonSerializerOptions JsonOptions { get; set; } = null!;
 
-    public Encoding? RequestEncoding { get; set; }
-    public string? RequestMediaType { get; set; }
+    public Encoding RequestEncoding { get; set; } = null!;
+    public string RequestMediaType { get; set; } = null!;
 }
 

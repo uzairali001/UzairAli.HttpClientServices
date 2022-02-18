@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using UzairAli.HttpClient.Attributes;
 using UzairAli.HttpClient.Exceptions;
 using UzairAli.HttpClient.Models.Configurations;
+using UzairAli.JsonConverters;
 
 using NetHttpClient = System.Net.Http.HttpClient;
 
@@ -39,21 +40,21 @@ public class HttpClientService : IHttpClientService
             RequestMediaType = "application/json",
             RequestEncoding = Encoding.UTF8,
             Accept = new List<MediaTypeWithQualityHeaderValue> {
-            new MediaTypeWithQualityHeaderValue("application/json")
-        },
+                new MediaTypeWithQualityHeaderValue("application/json")
+            },
             JsonOptions = new JsonSerializerOptions()
             {
                 PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 NumberHandling = JsonNumberHandling.AllowReadingFromString,
                 Converters =
-            {
+                {
 #if NET6_0_OR_GREATER
-                new Converters.JsonStringDateOnlyConverter(),
-                new Converters.JsonStringTimeOnlyConverter(),
+                    new JsonStringDateOnlyConverter(),
+                    new JsonStringTimeOnlyConverter(),
 #endif
-                new Converters.JsonStringBooleanConverter(),
-            }
+                    new JsonStringBooleanConverter(),
+                }
             }
         };
 
