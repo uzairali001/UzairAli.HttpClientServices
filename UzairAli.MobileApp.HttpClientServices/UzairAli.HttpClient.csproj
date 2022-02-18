@@ -8,7 +8,7 @@
 
 		<PackageId>UzairAli.HttpClient</PackageId>
 		<PackageTags>HttpClient Service</PackageTags>
-		<Version>0.1.4-beta9</Version>
+		<Version>0.1.4-beta10</Version>
 		<Authors>Uzair Ali</Authors>
 		<Company>Uzair Ali</Company>
 		<Description>This library provides utility functions for .Net Http Client</Description>

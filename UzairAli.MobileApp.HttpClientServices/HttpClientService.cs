@@ -361,7 +361,7 @@ public class HttpClientService : IHttpClientService
         var response = await PostInternalAsync(uri, httpContent, ct);
         if (response is null)
         {
-            return new();
+            return default;
         }
 
         return await response.Content.ReadFromJsonAsync(returnModel, _jsonSerializerOptions, cancellationToken: ct);
