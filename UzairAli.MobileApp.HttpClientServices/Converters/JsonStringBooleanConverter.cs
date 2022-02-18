@@ -13,13 +13,10 @@ public class JsonStringBooleanConverter : JsonConverterFactory
 
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-        if (typeToConvert == typeof(bool))
-        {
-            return new BooleanConverter();
-        }
-        return new NullableBooleanConverter();
+        return typeToConvert == typeof(bool)
+            ? new BooleanConverter()
+            : new NullableBooleanConverter();
     }
-
 
 
     private class BooleanConverter : JsonConverter<bool>
@@ -39,15 +36,6 @@ public class JsonStringBooleanConverter : JsonConverterFactory
         public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
         {
             writer.WriteBooleanValue(value);
-        }
-
-        private bool ParseBoolean(string? value)
-        {
-            return value switch
-            {
-                "true" or "yes" or "y" or "1" => true,
-                _ => false,
-            };
         }
     }
 
@@ -75,13 +63,16 @@ public class JsonStringBooleanConverter : JsonConverterFactory
             writer.WriteBooleanValue(value is true);
         }
 
-        private bool ParseBoolean(string? value)
+        
+    }
+
+    private static bool ParseBoolean(string? value)
+    {
+        return value?.ToLower().Trim() switch
         {
-            return value switch
-            {
-                "true" or "yes" or "y" or "1" => true,
-                _ => false,
-            };
-        }
+            null => default,
+            "true" or "yes" or "y" or "1" => true,
+            _ => false,
+        };
     }
 }
