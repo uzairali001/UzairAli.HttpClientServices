@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -54,6 +55,10 @@ public class HttpClientService : IHttpClientService
                     new JsonStringTimeOnlyConverter(),
 #endif
                     new JsonStringBooleanConverter(),
+                    new JsonStringGuidConverter(),
+                    new JsonStringDateTimeConverter(),
+                    new JsonStringDoubleConverter(),
+                    new JsonStringIntConverter(),
                 }
             }
         };
@@ -372,6 +377,7 @@ public class HttpClientService : IHttpClientService
         {
             string para => Task.FromResult(para),
             Dictionary<string, string> para => GetFormUrlEncodedContentAsync(para),
+            ExpandoObject obj => GetParameterStringFromExpendoObject(obj),
             object para => GetParameterStringFromModelAsync(para),
             _ => Task.FromResult(string.Empty),
         });
@@ -384,7 +390,7 @@ public class HttpClientService : IHttpClientService
     private async Task<string> GetParameterStringFromModelAsync(object model)
     {
         Dictionary<string, string> paramDictionary = model.GetType().GetProperties()
-            .Where(p => p.GetSetMethod() != null)
+            .Where(p => p.GetGetMethod() != null)
             .Where(p => p.GetCustomAttribute<QueryIgnoreAttribute>() is null)
             .Select(p =>
             {
@@ -396,14 +402,14 @@ public class HttpClientService : IHttpClientService
 
         return await GetParameterStringAsync(paramDictionary);
     }
-    private string GetParameterValueString(object valueObject)
+    private string GetParameterValueString(object? valueObject)
     {
         if (valueObject is null)
         {
             return string.Empty;
         }
 
-        string value = valueObject switch
+        var value = valueObject switch
         {
             //var number when
             //    number is double ||
@@ -415,7 +421,11 @@ public class HttpClientService : IHttpClientService
                 dt is DateTime time => time.ToString("o"),
             _ => valueObject.ToString(),
         };
-        return value;
+        return value ?? string.Empty;
+    }
+    private async Task<string> GetParameterStringFromExpendoObject(ExpandoObject obj)
+    {
+        return string.Join("&", obj.ToList().Select(o => $"{o.Key}={GetParameterValueString(o.Value)}"));
     }
 
 

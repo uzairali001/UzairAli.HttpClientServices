@@ -59,6 +59,9 @@ public interface IHttpClientService
     Task<HttpResponseMessage> DeleteAsync(string uri, CancellationToken ct = default);
 
 
+    Task<string?> SerializeJsonAsync(object? valueObject, Type returnType, JsonSerializerOptions? options = null);
+    Task<string?> SerializeJsonAsync<TModel>(TModel? valueObject, JsonSerializerOptions? options = null);
+
     Task<object?> DeserializeResponseAsync(HttpResponseMessage? result, Type returnType);
     Task<TModel?> DeserializeResponseAsync<TModel>(HttpResponseMessage? result);
     Task<object?> DeserializeJsonAsync(string json, Type returnType, JsonSerializerOptions? options = null);
