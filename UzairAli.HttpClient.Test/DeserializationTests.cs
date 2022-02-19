@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 using UzairAli.HttpClient.Test.Models;
+using UzairAli.HttpClient.Test.Models.Responses;
 
 using Xunit;
 
@@ -14,14 +17,32 @@ public class DeserializationTests
         _httpClient = new HttpClientService();
     }
 
-    [Fact]
-    public async void Should_DeserializeGuid()
+    [Theory]
+    [InlineData("d3aa2d1a-bb3e-409f-afaf-0f3fe566a903")]
+    [InlineData("d3aa2d1abb3e409fafaf0f3fe566a903")]
+    [InlineData("{d3aa2d1a-bb3e-409f-afaf-0f3fe566a903}")]
+    public async void Should_DeserializeGuid(string guid)
     {
         // Arrange
         string expected = "d3aa2d1a-bb3e-409f-afaf-0f3fe566a903";
 
         // Act
-        string json = /*lang=json,strict*/ "{\"Guid\": \"d3aa2d1a-bb3e-409f-afaf-0f3fe566a903\"}";
+        string json = /*lang=json,strict*/ $"{{\"Guid\": \"{guid}\"}}";
+        var obj = await _httpClient.DeserializeJsonAsync<GuidTestDto>(json);
+        string? actual = obj?.Guid.ToString();
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async void Should_DeserializeEmptyGuid()
+    {
+        // Arrange
+        string expected = Guid.Empty.ToString();
+
+        // Act
+        string json = /*lang=json,strict*/ $"{{\"Guid\": \"\"}}";
         var obj = await _httpClient.DeserializeJsonAsync<GuidTestDto>(json);
         string? actual = obj?.Guid.ToString();
 
@@ -36,7 +57,7 @@ public class DeserializationTests
         string? expected = null;
 
         // Act
-        string json = /*lang=json,strict*/ "{\"Guid\": null}";
+        string json = /*lang=json,strict*/ "{\"Guid\": \"\"}";
         var obj = await _httpClient.DeserializeJsonAsync<NullableGuidTestDto>(json);
         string? actual = obj?.Guid?.ToString();
 
@@ -53,7 +74,7 @@ public class DeserializationTests
         // Act
         string json = /*lang=json,strict*/ "{\"DateTime\": \"2022-02-18T16:16:00Z\"}";
         var obj = await _httpClient.DeserializeJsonAsync<DateTimeTestDto>(json);
-        DateTime? actual = obj?.DateTime;
+        DateTime? actual = obj?.DateTime.ToUniversalTime();
 
         // Assert
         Assert.Equal(expected, actual);
@@ -68,6 +89,34 @@ public class DeserializationTests
         // Act
         string json = /*lang=json,strict*/ "{\"DateTime\": null }";
         var obj = await _httpClient.DeserializeJsonAsync<NullableDateTimeTestDto>(json);
+        DateTime? actual = obj?.DateTime;
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+    [Fact]
+    public async void Should_DeserializeEmptyDateTimeToNull()
+    {
+        // Arrange
+        DateTime? expected = null;
+
+        // Act
+        string json = /*lang=json,strict*/ "{\"DateTime\": \"\" }";
+        var obj = await _httpClient.DeserializeJsonAsync<NullableDateTimeTestDto>(json);
+        DateTime? actual = obj?.DateTime;
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+    [Fact]
+    public async void Should_DeserializeEmptyDateTimeDefault()
+    {
+        // Arrange
+        DateTime? expected = DateTime.MinValue;
+
+        // Act
+        string json = /*lang=json,strict*/ "{\"DateTime\": \"\" }";
+        var obj = await _httpClient.DeserializeJsonAsync<DateTimeTestDto>(json);
         DateTime? actual = obj?.DateTime;
 
         // Assert
@@ -169,7 +218,50 @@ public class DeserializationTests
         // Assert
         Assert.Equal(expected, actual);
     }
+    [Fact]
+    public async void Should_DeserializeEmptyBoolean()
+    {
+        // Arrange
+        bool expected = false;
 
+        // Act
+        string json = /*lang=json,strict*/ $"{{\"Bool\": \"\" }}";
+        var obj = await _httpClient.DeserializeJsonAsync<BooleanTestDto>(json);
+        bool? actual = obj?.Bool;
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+    
+    [Fact]
+    public async void Should_DeserializeEmptyNullableBoolean()
+    {
+        // Arrange
+        bool? expected = null;
+
+        // Act
+        string json = /*lang=json,strict*/ $"{{\"Bool\": \"\" }}";
+        var obj = await _httpClient.DeserializeJsonAsync<NullableBooleanTestDto>(json);
+        bool? actual = obj?.Bool;
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async void Should_DeserializeString()
+    {
+        // Arrange
+
+        // Act
+        string json = /*lang=json,strict*/ "[ { \"guid\": \"69084B7780EA490BBE9CB6396FB3F6C8\", \"morningLatitude\": \"0\", \"morningLongitude\": \"0\", \"eveningLatitude\": \"0\", \"eveningLongitude\": \"0\", \"visitCount\": \"1\", \"userEmail\": \"\", \"doctorName\": \"TEAM MEETING\", \"doctorCode\": \"00001\", \"class\": \"\", \"isActive\": \"true\", \"specialty\": \"\", \"lastVisitDate\": \"0001-01-01T00:00:00\", \"workingArea\": \"\", \"lastUpdatedAt\": \"2020-09-03T01:37:28\", \"nextVisitDate\": \"\", \"isException\": \"true\", \"navigateTo\": \"Exception\" } ]";
+        var actual = await _httpClient.DeserializeJsonAsync<IEnumerable<DoctorResponse>>(json);
+
+        // Assert
+        Assert.NotNull(actual);
+    }
+
+    #region NET6_0_OR_GREATER
 #if NET6_0_OR_GREATER
     [Fact]
     public async void Should_DeserializeDateOnly()
@@ -232,4 +324,5 @@ public class DeserializationTests
         Assert.Equal(expected, actual);
     }
 #endif
+    #endregion
 }

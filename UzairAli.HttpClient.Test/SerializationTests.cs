@@ -1,4 +1,5 @@
 using System;
+using System.Dynamic;
 
 using UzairAli.HttpClient.Test.Models;
 
@@ -14,14 +15,17 @@ public class SerializationTests
         _httpClient = new HttpClientService();
     }
 
-    [Fact]
-    public async void Should_SerializeGuid()
+    [Theory]
+    [InlineData("d3aa2d1a-bb3e-409f-afaf-0f3fe566a903")]
+    [InlineData("d3aa2d1abb3e409fafaf0f3fe566a903")]
+    [InlineData("{d3aa2d1a-bb3e-409f-afaf-0f3fe566a903}")]
+    public async void Should_SerializeGuid(string guid)
     {
         // Arrange
-        string expected = /*lang=json,strict*/ "{\"guid\":\"d3aa2d1a-bb3e-409f-afaf-0f3fe566a903\"}";
+        string expected = /*lang=json,strict*/ $"{{\"guid\":\"d3aa2d1a-bb3e-409f-afaf-0f3fe566a903\"}}";
 
         // Act
-        GuidTestDto dto = new() { Guid = Guid.Parse("d3aa2d1a-bb3e-409f-afaf-0f3fe566a903") };
+        GuidTestDto dto = new() { Guid = Guid.Parse(guid) };
         string? actual = await new HttpClientService().SerializeJsonAsync(dto);
 
         // Assert
@@ -46,10 +50,10 @@ public class SerializationTests
     public async void Should_SerializeDateTime()
     {
         // Arrange
-        string expected = /*lang=json,strict*/ "{\"dateTime\":\"2022-02-18T16:16:00Z\"}";
+        string expected = /*lang=json,strict*/ "{\"dateTime\":\"2022-02-18T16:16:00.0000000Z\"}";
 
         // Act
-        DateTimeTestDto dto = new() { DateTime = DateTime.Parse("2022-02-18T16:16:00Z").ToUniversalTime() };
+        DateTimeTestDto dto = new() { DateTime = DateTime.Parse("2022-02-18T16:16:00.0000000Z").ToUniversalTime() };
         string? actual = await _httpClient.SerializeJsonAsync(dto);
 
         // Assert
@@ -83,7 +87,6 @@ public class SerializationTests
         // Assert
         Assert.Equal(expected, actual);
     }
-
     [Fact]
     public async void Should_SerializeNullableInt()
     {
