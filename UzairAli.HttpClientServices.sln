@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32210.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UzairAli.HttpClient", "UzairAli.MobileApp.HttpClientServices\UzairAli.HttpClient.csproj", "{D2120401-194B-4789-8159-F803ED43539D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UzairAli.HttpClient", "UzairAli.HttpClientServices\UzairAli.HttpClient.csproj", "{D2120401-194B-4789-8159-F803ED43539D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UzairAli.HttpClient.Test", "UzairAli.HttpClient.Test\UzairAli.HttpClient.Test.csproj", "{3D086FC9-0441-4430-9D7E-1D22F1660A4B}"
 EndProject

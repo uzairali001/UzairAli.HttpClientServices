@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UzairAli.MobileApp.HttpClientServices\UzairAli.HttpClient.csproj" />
+    <ProjectReference Include="..\UzairAli.HttpClientServices\UzairAli.HttpClient.csproj" />
   </ItemGroup>
 
 </Project>

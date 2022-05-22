@@ -1,1 +1,1 @@
-# UzairAli.MobileApp.HttpClientServices
+# UzairAli.HttpClientServices

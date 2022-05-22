@@ -6,7 +6,7 @@
 	<Nullable>enable</Nullable>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-	<PackageId>UzairAli.MobileApp.HttpClientServices</PackageId>
+	<PackageId>UzairAli.HttpClientServices</PackageId>
 	<PackageTags>HttpClient Service</PackageTags>
 	<Version>0.1.3</Version>
 	<Authors>Uzair Ali</Authors>
@@ -18,7 +18,7 @@
 		<dependency id="System.Text.Json" version="5.0" />
 	</dependencies>
 
-	<RepositoryUrl>https://github.com/uzairali001/UzairAli.MobileApp.HttpClientServices.git</RepositoryUrl>
+	<RepositoryUrl>https://github.com/uzairali001/UzairAli.HttpClientServices.git</RepositoryUrl>
 
 	<RepositoryType>git</RepositoryType>
 
