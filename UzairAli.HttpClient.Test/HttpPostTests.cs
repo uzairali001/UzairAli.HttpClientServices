@@ -17,6 +17,29 @@ public class HttpPostTests
     public HttpPostTests()
     {
         _httpClient = new HttpClientService();
+    
+    }
+
+    [Fact]
+    public async void Should_PostAndReturnNull()
+    {
+        // Arrange
+        string url = "https://www.ikonbusiness.com/api/v5/api/auth/sync";
+        AuthenticationResponse? expected = null;
+
+        object request = new
+        {
+            EmailAddress = "100@ikon.com",
+            UpdatedAt = "2022-05-20T21:38:30.301",
+            DeviceId = "c00f5d0a1e5980ad",
+            BuildVersion = "270"
+        };
+
+        // Act
+        var actual  = await _httpClient.PostAsync<AuthenticationResponse>(url, request);
+
+        // Assert
+        Assert.Equal(expected, actual);
     }
 
 }

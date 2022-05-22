@@ -362,13 +362,23 @@ public class HttpClientService : IHttpClientService
     }
     private async Task<object?> PostInternalAsync(string uri, Type returnModel, HttpContent httpContent, CancellationToken ct = default)
     {
-        var response = await _httpClient.PostAsync(uri, httpContent, ct);
-        if (response is null)
+        HttpResponseMessage response = await _httpClient.PostAsync(uri, httpContent, ct);
+        string? responseString = await response.Content.ReadAsStringAsync();
+
+        if (string.IsNullOrWhiteSpace(responseString))
         {
             return default;
         }
 
-        return await response.Content.ReadFromJsonAsync(returnModel, _jsonSerializerOptions, cancellationToken: ct);
+        try
+        {
+            return await response.Content.ReadFromJsonAsync(returnModel, _jsonSerializerOptions, cancellationToken: ct);
+        }
+        catch (JsonException ex)
+        {
+            var requestString = await httpContent.ReadAsStringAsync();
+            throw new InvalidJsonException(uri, requestString, responseString, response.StatusCode, ex);
+        }
     }
 
 
