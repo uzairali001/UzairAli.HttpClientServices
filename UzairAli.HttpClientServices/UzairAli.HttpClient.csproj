@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp3.0;netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
 		<PackageId>UzairAli.HttpClient</PackageId>
 		<PackageTags>HttpClient Service</PackageTags>
-		<Version>0.1.7</Version>
+		<Version>0.1.8</Version>
 		<Authors>Uzair Ali</Authors>
 		<Company>Uzair Ali</Company>
 		<Description>This library provides utility functions for .Net Http Client</Description>

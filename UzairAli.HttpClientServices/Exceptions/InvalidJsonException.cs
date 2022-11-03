@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace UzairAli.HttpClient.Exceptions;
 [Serializable]
-internal class InvalidJsonException : Exception
+public class InvalidJsonException : Exception
 {
     public string Uri { get; private set; } = string.Empty;
     public string RequestString { get; } = string.Empty;
