@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json;
 
 namespace UzairAli.HttpClient.Models.Configurations;
 
 public class HttpClientOptions
 {
     public Uri? BaseAddress { get; set; }
-    public TimeSpan Timeout { get; set; }
-    public IEnumerable<MediaTypeWithQualityHeaderValue> Accept { get; set; } = null!;
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(100);
+    public ICollection<MediaTypeWithQualityHeaderValue> Accept { get; } 
+        = new List<MediaTypeWithQualityHeaderValue> { new MediaTypeWithQualityHeaderValue("application/json") };
+    public Dictionary<string, string> Headers { get; set; } = new();
 
     public AuthenticationHeaderValue? Authorization { get; set; }
 
-    public JsonSerializerOptions JsonOptions { get; set; } = null!;
-
-    public Encoding RequestEncoding { get; set; } = null!;
-    public string RequestMediaType { get; set; } = null!;
+    public Encoding RequestEncoding { get; set; } = Encoding.UTF8;
+    public string RequestMediaType { get; set; } = "application/json";
 }
 

@@ -66,4 +66,7 @@ public interface IHttpClientService
     Task<TModel?> DeserializeResponseAsync<TModel>(HttpResponseMessage? result);
     Task<object?> DeserializeJsonAsync(string json, Type returnType, JsonSerializerOptions? options = null);
     Task<TReturn?> DeserializeJsonAsync<TReturn>(string json, JsonSerializerOptions? options = null);
+
+
+    MultipartFormDataContent GetMultipartFormDataContent(string filePath, IDictionary<string, string>? additionalData = default);
 }

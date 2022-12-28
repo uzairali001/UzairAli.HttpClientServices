@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using UzairAli.HttpClient.Test.Models;
 using UzairAli.HttpClient.Test.Models.Responses;
 
+using Microsoft.Extensions.Http;
 using Xunit;
+using System.Text.Json;
+using UzairAli.JsonConverters;
 
 namespace UzairAli.HttpClient.Test;
 public class DeserializationTests
@@ -14,7 +17,26 @@ public class DeserializationTests
 
     public DeserializationTests()
     {
-        _httpClient = new HttpClientService();
+        JsonSerializerOptions jsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString,
+            Converters =
+            {
+#if NET6_0_OR_GREATER
+                new JsonStringDateOnlyConverter(),
+                new JsonStringTimeOnlyConverter(),
+#endif
+                new JsonStringBooleanConverter(),
+                new JsonStringGuidConverter(),
+                new JsonStringDateTimeConverter(),
+                new JsonStringDoubleConverter(),
+                new JsonStringIntConverter(),
+            }
+        };
+
+        _httpClient = new HttpClientService(jsonOptions: jsonOptions);
     }
 
     [Theory]

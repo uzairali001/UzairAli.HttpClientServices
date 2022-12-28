@@ -1,29 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp3.0;netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
 		<PackageId>UzairAli.HttpClient</PackageId>
 		<PackageTags>HttpClient Service</PackageTags>
-		<Version>0.1.8</Version>
+		<Version>0.2.1</Version>
 		<Authors>Uzair Ali</Authors>
 		<Company>Uzair Ali</Company>
 		<Description>This library provides utility functions for .Net Http Client</Description>
 
 		<dependencies>
 			<dependency id="UzairAli.JsonConverters" version="0.1.5" />
-
-			<group targetFramework="netcoreapp2.1;netcoreapp2.2;netcoreapp3.0">
-				<dependency id="System.Net.Http.Json" version="5.*" />
-				<dependency id="System.Text.Json" version="5.*" />
-			</group>
-			<group targetFramework="netstandard2.0;netstandard2.1;netcoreapp3.1;net5.0;net6.0">
-				<dependency id="System.Net.Http.Json" version="6.*" />
-				<dependency id="System.Text.Json" version="6.*" />
-			</group>
+			<dependency id="System.Net.Http.Json" version="6.*" />
+			<dependency id="System.Text.Json" version="6.*" />
 		</dependencies>
 
 		<RepositoryUrl>https://github.com/uzairali001/UzairAli.HttpClientServices.git</RepositoryUrl>
@@ -35,17 +28,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
 		<PackageReference Include="UzairAli.JsonConverters" Version="0.1.5" />
-	</ItemGroup>
-
-	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' or '$(TargetFramework)' == 'netcoreapp2.2' or '$(TargetFramework)' == 'netcoreapp3.0'">
-		<PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
-		<PackageReference Include="System.Text.Json" Version="5.0.2" />
 	</ItemGroup>
 	
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' or '$(TargetFramework)' == 'netstandard2.1' or '$(TargetFramework)' == 'netcoreapp3.1' or '$(TargetFramework)' == 'net5.0' or '$(TargetFramework)' == 'net6.0'">
-		<PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
-		<PackageReference Include="System.Text.Json" Version="6.0.0" />
+		<PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
+		<PackageReference Include="System.Text.Json" Version="7.0.1" />
 	</ItemGroup>
 
 

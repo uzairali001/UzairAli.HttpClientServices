@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Reflection;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -14,10 +14,10 @@ using System.Threading.Tasks;
 
 using UzairAli.HttpClient.Attributes;
 using UzairAli.HttpClient.Exceptions;
+using UzairAli.HttpClient.Models;
 using UzairAli.HttpClient.Models.Configurations;
-using UzairAli.JsonConverters;
 
-using NetHttpClient = System.Net.Http.HttpClient;
+//using NetHttpClient = System.Net.Http.HttpClient;
 
 namespace UzairAli.HttpClient;
 
@@ -27,59 +27,25 @@ public class HttpClientService : IHttpClientService
     #endregion
 
     #region Fields
-    private readonly NetHttpClient _httpClient;
+    //private readonly NetHttpClient _httpClient;
     private readonly JsonSerializerOptions? _jsonSerializerOptions;
     private readonly HttpClientOptions _options;
+
+    private SocketsHttpHandler _socketsHandler;
     #endregion
 
     #region Constructors
-    public HttpClientService(Action<HttpClientOptions>? opts = null)
+    public HttpClientService(HttpClientOptions? httpOptions = default, JsonSerializerOptions? jsonOptions = default)
     {
-        _options = new()
+        _options = httpOptions ?? new();
+        _jsonSerializerOptions = jsonOptions ?? new();
+
+        _socketsHandler = new SocketsHttpHandler
         {
-            Timeout = TimeSpan.FromSeconds(100),
-            RequestMediaType = "application/json",
-            RequestEncoding = Encoding.UTF8,
-            Accept = new List<MediaTypeWithQualityHeaderValue> {
-                new MediaTypeWithQualityHeaderValue("application/json")
-            },
-            JsonOptions = new JsonSerializerOptions()
-            {
-                PropertyNameCaseInsensitive = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                NumberHandling = JsonNumberHandling.AllowReadingFromString,
-                Converters =
-                {
-#if NET6_0_OR_GREATER
-                    new JsonStringDateOnlyConverter(),
-                    new JsonStringTimeOnlyConverter(),
-#endif
-                    new JsonStringBooleanConverter(),
-                    new JsonStringGuidConverter(),
-                    new JsonStringDateTimeConverter(),
-                    new JsonStringDoubleConverter(),
-                    new JsonStringIntConverter(),
-                }
-            }
+            PooledConnectionLifetime = TimeSpan.FromMinutes(10),
+            PooledConnectionIdleTimeout = TimeSpan.FromMinutes(5),
+            MaxConnectionsPerServer = 10
         };
-
-        opts?.Invoke(_options);
-
-        _httpClient = new NetHttpClient()
-        {
-            BaseAddress = _options.BaseAddress,
-            Timeout = _options.Timeout,
-        };
-
-        _options.Accept?.ToList()
-            .ForEach(_httpClient.DefaultRequestHeaders.Accept.Add);
-
-        if (_options.Authorization is not null)
-        {
-            _httpClient.DefaultRequestHeaders.Authorization = _options.Authorization;
-        }
-
-        _jsonSerializerOptions = _options.JsonOptions;
     }
     #endregion
 
@@ -202,7 +168,7 @@ public class HttpClientService : IHttpClientService
     {
         var json = await SerializeJsonAsync(parameters, options: _jsonSerializerOptions);
         var httpContent = new StringContent(json, _options.RequestEncoding, _options.RequestMediaType);
-        
+
         return await PostInternalAsync(uri, returnType, httpContent, ct);
     }
 
@@ -263,11 +229,11 @@ public class HttpClientService : IHttpClientService
     #region HttpPut
     public async Task<HttpResponseMessage> PutAsync(string uri, object model, CancellationToken ct = default)
     {
-        return await _httpClient.PutAsJsonAsync(uri, model, _jsonSerializerOptions, ct);
+        return await GetHttpClient().PutAsJsonAsync(uri, model, _jsonSerializerOptions, ct);
     }
     public async Task<HttpResponseMessage> PutAsync(Uri uri, object model, CancellationToken ct = default)
     {
-        return await _httpClient.PutAsJsonAsync(uri, model, _jsonSerializerOptions, ct);
+        return await GetHttpClient().PutAsJsonAsync(uri, model, _jsonSerializerOptions, ct);
     }
     #endregion
 
@@ -278,7 +244,7 @@ public class HttpClientService : IHttpClientService
     }
     public async Task<HttpResponseMessage> DeleteAsync(string uri, CancellationToken ct = default)
     {
-        return await _httpClient.DeleteAsync(uri, ct);
+        return await GetHttpClient().DeleteAsync(uri, ct);
     }
     #endregion
 
@@ -333,6 +299,83 @@ public class HttpClientService : IHttpClientService
     }
     #endregion
 
+    #region HTTPContent
+    public MultipartFormDataContent GetMultipartFormDataContent(string filePath, IDictionary<string, string>? additionalData = default)
+    {
+        //Add the file
+        var stream = File.OpenRead(filePath);
+
+        MultipartFormDataContent multipartFormContent = new();
+        multipartFormContent.Headers.ContentType.MediaType = "multipart/form-data";
+
+        //Add additional fields if any
+        AppendAdditionalData(additionalData, multipartFormContent);
+        multipartFormContent.Add(new StreamContent(stream), name: "file", fileName: Path.GetFileName(filePath));
+        return multipartFormContent;
+    }
+
+    private static void AppendAdditionalData(IDictionary<string, string>? additionalData, MultipartFormDataContent multipartFormContent)
+    {
+        if (additionalData is not null)
+        {
+            foreach (var data in additionalData)
+            {
+                multipartFormContent.Add(new StringContent(data.Value), name: data.Key);
+            }
+        }
+    }
+
+    #region File Upload 
+    public async Task UploadFileAsync(string apiEndpoint, FileMeta file, IDictionary<string, string>? additionalData = default,
+        AuthenticationHeaderValue? authorization = default, int bufferSize = 100000)
+    {
+        await UploadFileAsync(apiEndpoint, new List<FileMeta>()
+        {  
+            new FileMeta()
+            {
+                Name = file.Name,
+                Path = file.Path
+            }    
+        }, additionalData, authorization, bufferSize);
+    }
+    public async Task UploadFileAsync(string apiEndpoint, string file, IDictionary<string, string>? additionalData = default,
+        AuthenticationHeaderValue? authorization = default, int bufferSize = 100000)
+    {
+        await UploadFileAsync(apiEndpoint, new List<string>() { file }, additionalData, authorization, bufferSize);
+    }
+    public async Task UploadFileAsync(string apiEndpoint, IEnumerable<string> files, IDictionary<string, string>? additionalData = default,
+        AuthenticationHeaderValue? authorization = default, int bufferSize = 100000)
+    {
+        await UploadFileAsync(apiEndpoint, files.Select(f => new FileMeta()
+        {
+            Name = Path.GetFileName(f),
+            Path = f,
+        }), additionalData, authorization, bufferSize);
+    }
+    public async Task UploadFileAsync(string apiEndpoint, IEnumerable<FileMeta> files, IDictionary<string, string>? additionalData = default,
+        AuthenticationHeaderValue? authorization = default, int bufferSize = 100000)
+    {
+        var httpClient = GetHttpClient();
+        var multipartContent = new MultipartFormDataContent("NKdKd9Yk");
+        multipartContent.Headers.ContentType.MediaType = "multipart/form-data";
+        AppendAdditionalData(additionalData, multipartContent);
+
+
+        foreach (var file in files)
+        {
+            var content = new StreamContent(new FileStream(file.Path, FileMode.Open), bufferSize);
+            multipartContent.Add(content, file.Name, file.Path);
+        }
+
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("multipart/form-data"));
+        httpClient.DefaultRequestHeaders.Authorization = authorization;
+        var response = await httpClient.PostAsync(apiEndpoint, multipartContent);
+        response.EnsureSuccessStatusCode();
+    }
+    #endregion
+
+    #endregion
+
     #endregion
 
     #region Private Methods
@@ -343,7 +386,7 @@ public class HttpClientService : IHttpClientService
         string parameterAppend = string.IsNullOrEmpty(parameterString) is false ? "?" + parameterString : string.Empty;
         string uriWithParameters = $"{uri}{parameterAppend}";
 
-        return await _httpClient.GetAsync(uriWithParameters, cancellationToken: ct);
+        return await GetHttpClient().GetAsync(uriWithParameters, cancellationToken: ct);
     }
 
     private async Task<object?> GetInternalAsync(string uri, Type returnModel, object? queryParameters = null,
@@ -353,16 +396,16 @@ public class HttpClientService : IHttpClientService
         string parameterAppend = string.IsNullOrEmpty(parameterString) is false ? "?" + parameterString : string.Empty;
         string uriWithParameters = $"{uri}{parameterAppend}";
 
-        return await _httpClient.GetFromJsonAsync(uriWithParameters, returnModel, _jsonSerializerOptions, ct);
+        return await GetHttpClient().GetFromJsonAsync(uriWithParameters, returnModel, _jsonSerializerOptions, ct);
     }
 
     private async Task<HttpResponseMessage> PostInternalAsync<TRequest>(string uri, TRequest? requestModel, CancellationToken ct = default)
     {
-        return await _httpClient.PostAsJsonAsync(uri, requestModel, _jsonSerializerOptions, ct);
+        return await GetHttpClient().PostAsJsonAsync(uri, requestModel, _jsonSerializerOptions, ct);
     }
     private async Task<object?> PostInternalAsync(string uri, Type returnModel, HttpContent httpContent, CancellationToken ct = default)
     {
-        HttpResponseMessage response = await _httpClient.PostAsync(uri, httpContent, ct);
+        HttpResponseMessage response = await GetHttpClient().PostAsync(uri, httpContent, ct);
         string? responseString = await response.Content.ReadAsStringAsync();
 
         if (string.IsNullOrWhiteSpace(responseString))
@@ -438,6 +481,28 @@ public class HttpClientService : IHttpClientService
         return string.Join("&", obj.ToList().Select(o => $"{o.Key}={GetParameterValueString(o.Value)}"));
     }
 
+
+    private System.Net.Http.HttpClient GetHttpClient()
+    {
+        System.Net.Http.HttpClient client = new(_socketsHandler, disposeHandler: false)
+        {
+            BaseAddress = _options.BaseAddress,
+            Timeout = _options.Timeout
+        };
+
+        _options.Accept.ToList().ForEach(client.DefaultRequestHeaders.Accept.Add);
+        _options.Headers.ToList().ForEach(header =>
+        {
+            client.DefaultRequestHeaders.Add(header.Key, header.Value);
+        });
+
+        if (_options.Authorization is not null)
+        {
+            client.DefaultRequestHeaders.Authorization = _options.Authorization;
+        }
+
+        return client;
+    }
 
     #endregion
 }
