@@ -1,13 +1,48 @@
-﻿using System;
-using System.Net.Http;
-using System.Text.Json;
-
+﻿
+/* Unmerged change from project 'UzairAli.NetHttpClient (net5.0)'
+Before:
+using System;
+After:
 using Microsoft.Extensions.DependencyInjection;
 
-using UzairAli.HttpClient.Models.Configurations;
-using UzairAli.JsonConverters;
+using System;
+*/
 
-namespace UzairAli.HttpClient.Extensions;
+/* Unmerged change from project 'UzairAli.NetHttpClient (net7.0)'
+Before:
+using System;
+After:
+using Microsoft.Extensions.DependencyInjection;
+
+using System;
+*/
+using Microsoft.Extensions.DependencyInjection;
+
+using System;
+using System.Text.Json;
+
+
+/* Unmerged change from project 'UzairAli.NetHttpClient (net5.0)'
+Before:
+using Microsoft.Extensions.DependencyInjection;
+
+using UzairAli.HttpClient;
+After:
+using UzairAli.HttpClient;
+*/
+
+/* Unmerged change from project 'UzairAli.NetHttpClient (net7.0)'
+Before:
+using Microsoft.Extensions.DependencyInjection;
+
+using UzairAli.HttpClient;
+After:
+using UzairAli.HttpClient;
+*/
+using UzairAli.JsonConverters;
+using UzairAli.NetHttpClient.Models.Configurations;
+
+namespace UzairAli.NetHttpClient.Extensions;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddHttpClientService(this IServiceCollection services, Action<HttpClientOptions>? httpOptionsBuilder = default,

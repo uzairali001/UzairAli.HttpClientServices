@@ -1,11 +1,11 @@
 using System;
-using System.Dynamic;
 
 using UzairAli.HttpClient.Test.Models;
+using UzairAli.NetHttpClient;
 
 using Xunit;
 
-namespace UzairAli.HttpClient.Test; 
+namespace UzairAli.HttpClient.Test;
 public class SerializationTests
 {
     private readonly HttpClientService _httpClient;
@@ -158,61 +158,61 @@ public class SerializationTests
     }
 
 #if NET6_0_OR_GREATER
-            [Fact]
-            public async void Should_SerializeDateOnly()
-            {
-                // Arrange
-                string expected = /*lang=json,strict*/ $"{{\"dateOnly\":\"2022-02-18\"}}";
+    [Fact]
+    public async void Should_SerializeDateOnly()
+    {
+        // Arrange
+        string expected = /*lang=json,strict*/ $"{{\"dateOnly\":\"2022-02-18\"}}";
 
-                // Act
-                DateOnlyTestDro dto = new() { DateOnly = new(2022, 02, 18) };
-                string? actual = await _httpClient.SerializeJsonAsync(dto);
+        // Act
+        DateOnlyTestDro dto = new() { DateOnly = new(2022, 02, 18) };
+        string? actual = await _httpClient.SerializeJsonAsync(dto);
 
-                // Assert
-                Assert.Equal(expected, actual);
-            }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-            [Fact]
-            public async void Should_SerializeNullableDateOnly()
-            {
-                // Arrange
-                string expected = /*lang=json,strict*/ $"{{\"dateOnly\":null}}";
+    [Fact]
+    public async void Should_SerializeNullableDateOnly()
+    {
+        // Arrange
+        string expected = /*lang=json,strict*/ $"{{\"dateOnly\":null}}";
 
-                // Act
-                NullableDateOnlyTestDro dto = new() { DateOnly = null };
-                string? actual = await _httpClient.SerializeJsonAsync(dto);
+        // Act
+        NullableDateOnlyTestDro dto = new() { DateOnly = null };
+        string? actual = await _httpClient.SerializeJsonAsync(dto);
 
-                // Assert
-                Assert.Equal(expected, actual);
-            }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-            [Fact]
-            public async void Should_SerializeTimeOnly()
-            {
-                // Arrange
-                string expected = /*lang=json,strict*/ $"{{\"timeOnly\":\"16:56:00\"}}";
+    [Fact]
+    public async void Should_SerializeTimeOnly()
+    {
+        // Arrange
+        string expected = /*lang=json,strict*/ $"{{\"timeOnly\":\"16:56:00\"}}";
 
-                // Act
-                TimeOnlyTestDto dto = new() { TimeOnly = new(16, 56, 0) };
-                string? actual = await _httpClient.SerializeJsonAsync(dto);
+        // Act
+        TimeOnlyTestDto dto = new() { TimeOnly = new(16, 56, 0) };
+        string? actual = await _httpClient.SerializeJsonAsync(dto);
 
-                // Assert
-                Assert.Equal(expected, actual);
-            }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
-            [Fact]
-            public async void Should_SerializeNullableTimeOnly()
-            {
-                // Arrange
-                string expected = /*lang=json,strict*/ $"{{\"timeOnly\":null}}";
+    [Fact]
+    public async void Should_SerializeNullableTimeOnly()
+    {
+        // Arrange
+        string expected = /*lang=json,strict*/ $"{{\"timeOnly\":null}}";
 
-                // Act
-                NullableTimeOnlyTestDto dto = new() { TimeOnly = null };
-                string? actual = await _httpClient.SerializeJsonAsync(dto);
+        // Act
+        NullableTimeOnlyTestDto dto = new() { TimeOnly = null };
+        string? actual = await _httpClient.SerializeJsonAsync(dto);
 
-                // Assert
-                Assert.Equal(expected, actual);
-            }
+        // Assert
+        Assert.Equal(expected, actual);
+    }
 
 #endif
 }

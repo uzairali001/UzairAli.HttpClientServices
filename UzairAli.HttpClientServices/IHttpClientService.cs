@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace UzairAli.HttpClient;
+namespace UzairAli.NetHttpClient;
 
 public interface IHttpClientService
 {

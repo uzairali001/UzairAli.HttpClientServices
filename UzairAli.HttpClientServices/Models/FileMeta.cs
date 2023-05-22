@@ -1,4 +1,4 @@
-﻿namespace UzairAli.HttpClient.Models;
+﻿namespace UzairAli.NetHttpClient.Models;
 public class FileMeta
 {
     public string Name { get; set; } = null!;

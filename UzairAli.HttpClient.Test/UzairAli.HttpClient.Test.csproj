@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UzairAli.HttpClientServices\UzairAli.HttpClient.csproj" />
+    <ProjectReference Include="..\UzairAli.HttpClientServices\UzairAli.NetHttpClient.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Net.Http;
-using System.Text;
-
-using UzairAli.HttpClient.Test.Models;
-using UzairAli.HttpClient.Test.Models.Requests;
-using UzairAli.HttpClient.Test.Models.Responses;
+﻿using UzairAli.HttpClient.Test.Models.Responses;
+using UzairAli.NetHttpClient;
 
 using Xunit;
 
@@ -17,7 +10,7 @@ public class HttpPostTests
     public HttpPostTests()
     {
         _httpClient = new HttpClientService();
-    
+
     }
 
     [Fact]
@@ -36,7 +29,7 @@ public class HttpPostTests
         };
 
         // Act
-        var actual  = await _httpClient.PostAsync<AuthenticationResponse>(url, request);
+        var actual = await _httpClient.PostAsync<AuthenticationResponse>(url, request);
 
         // Assert
         Assert.Equal(expected, actual);

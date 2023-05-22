@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace UzairAli.HttpClient.Test.Models.Requests;
 internal class AuthenticationRequest

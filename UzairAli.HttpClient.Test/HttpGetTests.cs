@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Net.Http;
-using System.Text;
+﻿using System.Collections.Generic;
+
+using UzairAli.NetHttpClient;
 
 using Xunit;
 
@@ -14,5 +12,25 @@ public class HttpGetTests
     {
         _httpClient = new HttpClientService();
     }
+
+    [Fact]
+    public async void TestGetHeaders()
+    {
+        // Arrange
+        string url = "https://jsonplaceholder.typicode.com/posts";
+
+
+        // Act
+        var response = await _httpClient.GetAsync(url, headers: new Dictionary<string, string>()
+        {
+            {"Authorization", "test"}
+        });
+
+        var a = response.RequestMessage.Headers.ToString();
+
+        // Assert
+        //Assert.Equal(actual);
+    }
+
 
 }

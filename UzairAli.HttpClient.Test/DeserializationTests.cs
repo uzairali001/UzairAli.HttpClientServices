@@ -1,14 +1,29 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Text.Json;
 
 using UzairAli.HttpClient.Test.Models;
 using UzairAli.HttpClient.Test.Models.Responses;
 
-using Microsoft.Extensions.Http;
+/* Unmerged change from project 'UzairAli.HttpClient.Test (net6.0)'
+Before:
 using Xunit;
 using System.Text.Json;
+After:
 using UzairAli.JsonConverters;
+*/
+
+/* Unmerged change from project 'UzairAli.HttpClient.Test (net7.0)'
+Before:
+using Xunit;
+using System.Text.Json;
+After:
+using UzairAli.JsonConverters;
+*/
+using UzairAli.JsonConverters;
+using UzairAli.NetHttpClient;
+
+using Xunit;
 
 namespace UzairAli.HttpClient.Test;
 public class DeserializationTests
@@ -254,7 +269,7 @@ public class DeserializationTests
         // Assert
         Assert.Equal(expected, actual);
     }
-    
+
     [Fact]
     public async void Should_DeserializeEmptyNullableBoolean()
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UzairAli.HttpClient.Exceptions;
+namespace UzairAli.NetHttpClient.Exceptions;
 
 public class JsonDeserializeException : Exception
 {

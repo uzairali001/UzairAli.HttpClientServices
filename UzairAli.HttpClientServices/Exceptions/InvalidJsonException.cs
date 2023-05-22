@@ -3,7 +3,7 @@ using System.Net;
 using System.Runtime.Serialization;
 using System.Text.Json;
 
-namespace UzairAli.HttpClient.Exceptions;
+namespace UzairAli.NetHttpClient.Exceptions;
 [Serializable]
 public class InvalidJsonException : Exception
 {

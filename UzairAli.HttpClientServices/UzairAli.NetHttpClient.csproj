@@ -6,9 +6,9 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-		<PackageId>UzairAli.HttpClient</PackageId>
+		<PackageId>UzairAli.NetHttpClient</PackageId>
 		<PackageTags>HttpClient Service</PackageTags>
-		<Version>1.0</Version>
+		<Version>1.0.2</Version>
 		<Authors>Uzair Ali</Authors>
 		<Company>Uzair Ali</Company>
 		<Description>This library provides utility functions for .Net Http Client</Description>

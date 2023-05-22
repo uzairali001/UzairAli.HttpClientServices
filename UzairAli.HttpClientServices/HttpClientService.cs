@@ -12,14 +12,14 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-using UzairAli.HttpClient.Attributes;
-using UzairAli.HttpClient.Exceptions;
-using UzairAli.HttpClient.Models;
-using UzairAli.HttpClient.Models.Configurations;
+using UzairAli.NetHttpClient.Attributes;
+using UzairAli.NetHttpClient.Exceptions;
+using UzairAli.NetHttpClient.Models;
+using UzairAli.NetHttpClient.Models.Configurations;
 
 //using NetHttpClient = System.Net.Http.HttpClient;
 
-namespace UzairAli.HttpClient;
+namespace UzairAli.NetHttpClient;
 
 public class HttpClientService : IHttpClientService
 {
@@ -31,7 +31,7 @@ public class HttpClientService : IHttpClientService
     private readonly JsonSerializerOptions? _jsonSerializerOptions;
     private readonly HttpClientOptions _options;
 
-    private readonly SocketsHttpHandler _socketsHandler;
+    private readonly SocketsHttpHandler? _socketsHandler;
     #endregion
 
     #region Constructors
@@ -40,12 +40,19 @@ public class HttpClientService : IHttpClientService
         _options = httpOptions ?? new();
         _jsonSerializerOptions = jsonOptions ?? new();
 
-        _socketsHandler = new SocketsHttpHandler
+        try
         {
-            PooledConnectionLifetime = TimeSpan.FromMinutes(10),
-            PooledConnectionIdleTimeout = TimeSpan.FromMinutes(5),
-            MaxConnectionsPerServer = 10
-        };
+            _socketsHandler = new SocketsHttpHandler
+            {
+                PooledConnectionLifetime = TimeSpan.FromMinutes(10),
+                PooledConnectionIdleTimeout = TimeSpan.FromMinutes(5),
+                MaxConnectionsPerServer = 10
+            };
+        }
+        catch (PlatformNotSupportedException)
+        {
+
+        }
     }
     #endregion
 
@@ -53,46 +60,46 @@ public class HttpClientService : IHttpClientService
     #region GetAsync
     public async Task<HttpResponseMessage> GetAsync(string uri, Dictionary<string, string>? headers = null, CancellationToken ct = default)
     {
-        return await GetInternalAsync(uri, headers, ct: ct);
+        return await GetInternalAsync(uri, headers: headers, ct: ct);
     }
     public async Task<HttpResponseMessage> GetAsync(string uri, Dictionary<string, string> queryParameters, Dictionary<string, string>? headers = null, CancellationToken ct = default)
     {
-        return await GetInternalAsync(uri, queryParameters, headers, ct: ct);
+        return await GetInternalAsync(uri, queryParameters, headers: headers, ct: ct);
     }
     public async Task<HttpResponseMessage> GetAsync(string uri, object queryParameters, Dictionary<string, string>? headers = null, CancellationToken ct = default)
     {
-        return await GetInternalAsync(uri, queryParameters, headers, ct: ct);
+        return await GetInternalAsync(uri, queryParameters, headers: headers, ct: ct);
     }
 
     public async Task<HttpResponseMessage> GetAsync(Uri uri, Dictionary<string, string>? headers = null, CancellationToken ct = default)
     {
-        return await GetInternalAsync(uri.ToString(), headers, ct: ct);
+        return await GetInternalAsync(uri.ToString(), headers: headers, ct: ct);
     }
 
     public async Task<HttpResponseMessage> GetAsync(Uri uri, Dictionary<string, string> queryParameters, Dictionary<string, string>? headers = null, CancellationToken ct = default)
     {
-        return await GetInternalAsync(uri.ToString(), queryParameters, headers, ct: ct);
+        return await GetInternalAsync(uri.ToString(), queryParameters, headers: headers, ct: ct);
     }
 
     public async Task<HttpResponseMessage> GetAsync(Uri uri, object queryParameters, Dictionary<string, string>? headers = null, CancellationToken ct = default)
     {
-        return await GetInternalAsync(uri.ToString(), queryParameters, headers, ct: ct);
+        return await GetInternalAsync(uri.ToString(), queryParameters, headers: headers, ct: ct);
     }
     #endregion
 
     #region GetFromJsonAsync
     public async Task<object?> GetAsync(string uri, Type returnType, Dictionary<string, string>? headers = null, CancellationToken ct = default)
     {
-        return await GetInternalAsync(uri, returnType, headers, ct: ct);
+        return await GetInternalAsync(uri, returnType, headers: headers, ct: ct);
     }
     public async Task<object?> GetAsync(string uri, Dictionary<string, string> queryParameters, Type returnType, Dictionary<string, string>? headers = null,
         CancellationToken ct = default)
     {
-        return await GetInternalAsync(uri, returnType, queryParameters, headers, ct);
+        return await GetInternalAsync(uri, returnType, queryParameters, headers: headers, ct);
     }
     public async Task<object?> GetAsync(string uri, object queryParameters, Type returnType, Dictionary<string, string>? headers = null, CancellationToken ct = default)
     {
-        return await GetInternalAsync(uri, returnType, queryParameters, headers, ct);
+        return await GetInternalAsync(uri, returnType, queryParameters, headers: headers, ct);
     }
 
 
@@ -482,13 +489,19 @@ public class HttpClientService : IHttpClientService
     }
 
 
-    private System.Net.Http.HttpClient GetHttpClient(Dictionary<string, string>? headers = null)
+    private HttpClient GetHttpClient(Dictionary<string, string>? headers = null)
     {
-        System.Net.Http.HttpClient client = new(_socketsHandler, disposeHandler: false)
-        {
-            BaseAddress = _options.BaseAddress,
-            Timeout = _options.Timeout
-        };
+        HttpClient client = _socketsHandler is not null
+            ? new(_socketsHandler, disposeHandler: false)
+            {
+                BaseAddress = _options.BaseAddress,
+                Timeout = _options.Timeout
+            }
+            : new()
+            {
+                BaseAddress = _options.BaseAddress,
+                Timeout = _options.Timeout
+            };
 
         _options.Accept.ToList().ForEach(client.DefaultRequestHeaders.Accept.Add);
         _options.Headers.ToList().ForEach(header =>
