@@ -479,6 +479,10 @@ public class HttpClientService : IHttpClientService
                 b is bool bVal => bVal.ToString(),
             var dt when
                 dt is DateTime time => time.ToString("o"),
+            var dt when
+                dt is DateOnly time => time.ToString("o"),
+            var dt when
+                dt is TimeOnly time => time.ToString("o"),
             _ => valueObject.ToString(),
         };
         return value ?? string.Empty;

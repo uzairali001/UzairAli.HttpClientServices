@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
 		<PackageId>UzairAli.NetHttpClient</PackageId>
 		<PackageTags>HttpClient Service</PackageTags>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 		<Authors>Uzair Ali</Authors>
 		<Company>Uzair Ali</Company>
 		<Description>This library provides utility functions for .Net Http Client</Description>
 
 		<dependencies>
-			<dependency id="UzairAli.JsonConverters" version="0.1.5" />
+			<dependency id="UzairAli.JsonConverters" version="1.0.0" />
 			<dependency id="System.Net.Http.Json" version="6.*" />
 			<dependency id="System.Text.Json" version="6.*" />
 		</dependencies>
@@ -28,13 +28,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-		<PackageReference Include="UzairAli.JsonConverters" Version="0.1.5" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+		<PackageReference Include="UzairAli.JsonConverters" Version="1.0.0" />
 	</ItemGroup>
 	
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' or '$(TargetFramework)' == 'netstandard2.1' or '$(TargetFramework)' == 'netcoreapp3.1' or '$(TargetFramework)' == 'net5.0' or '$(TargetFramework)' == 'net6.0'">
-		<PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
-		<PackageReference Include="System.Text.Json" Version="7.0.1" />
+		<PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
+		<PackageReference Include="System.Text.Json" Version="8.0.0" />
 	</ItemGroup>
 
 
