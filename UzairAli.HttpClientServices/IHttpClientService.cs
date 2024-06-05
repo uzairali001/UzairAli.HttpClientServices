@@ -52,8 +52,29 @@ public interface IHttpClientService
     Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, Dictionary<string, string> queryParameters, Dictionary<string, string>? headers = null, CancellationToken ct = default);
     Task<TReturnModel?> PostAsync<TReturnModel>(Uri uri, object queryParameters, Dictionary<string, string>? headers = null, CancellationToken ct = default);
 
-    Task<HttpResponseMessage> PutAsync(string uri, object model, Dictionary<string, string>? headers = null, CancellationToken ct = default);
-    Task<HttpResponseMessage> PutAsync(Uri uri, object model, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+
+    Task<HttpResponseMessage> PutAsync(string uri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<HttpResponseMessage> PutAsync(string uri, Dictionary<string, object> parameters, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<HttpResponseMessage> PutAsync(string uri, object parameters, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<HttpResponseMessage> PutAsync(Uri uri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<HttpResponseMessage> PutAsync(Uri uri, Dictionary<string, object> parameters, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<HttpResponseMessage> PutAsync(Uri uri, object parameters, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+
+    Task<object?> PutAsync(string uri, HttpContent httpContent, Type returnType, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<object?> PutAsync(string uri, Dictionary<string, string> parameters, Type returnType, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<object?> PutAsync(string uri, object parameters, Type returnType, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<object?> PutAsync(Uri uri, HttpContent httpContent, Type returnType, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<object?> PutAsync(Uri uri, Dictionary<string, string> parameters, Type returnType, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<object?> PutAsync(Uri uri, object parameters, Type returnType, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+
+    Task<TReturnModel?> PutAsync<TReturnModel>(string uri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<TReturnModel?> PutAsync<TReturnModel>(string uri, Dictionary<string, string> parameters, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<TReturnModel?> PutAsync<TReturnModel>(string uri, object parameters, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<TReturnModel?> PutAsync<TReturnModel>(Uri uri, HttpContent httpContent, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<TReturnModel?> PutAsync<TReturnModel>(Uri uri, Dictionary<string, string> queryParameters, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+    Task<TReturnModel?> PutAsync<TReturnModel>(Uri uri, object queryParameters, Dictionary<string, string>? headers = null, CancellationToken ct = default);
+
+
 
     Task<HttpResponseMessage> DeleteAsync(Uri uri, Dictionary<string, string>? headers = null, CancellationToken ct = default);
     Task<HttpResponseMessage> DeleteAsync(string uri, Dictionary<string, string>? headers = null, CancellationToken ct = default);
